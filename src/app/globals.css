@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+/**
+ * Design tokens — see docs/03-design-system.md.
+ * Dark is the only theme in v1.
+ */
+@theme {
+  --color-bg: #0a0c0f;
+  --color-surface: #1a2029;
+  --color-surface-2: #242c38;
+  --color-surface-3: #2f3845;
+  --color-border: #2b3442;
+  --color-border-strong: #3d4858;
+
+  --color-text: #ffffff;
+  --color-muted: #8e9bac;
+  --color-subtle: #5b6676;
+
+  --color-brand: #3be081;
+  --color-brand-dim: #1f7a47;
+  --color-danger: #ff4d4f;
+  --color-warning: #facc15;
+  --color-info: #38bdf8;
+
+  /* Workout types — the user's primary scanning mechanism. */
+  --color-w-recovery: #a3e635;
+  --color-w-easy: #4ade80;
+  --color-w-long: #a855f7;
+  --color-w-tempo: #facc15;
+  --color-w-threshold: #fb923c;
+  --color-w-intervals: #ef4444;
+  --color-w-racepace: #38bdf8;
+  --color-w-race: #f43f5e;
+  --color-w-strength: #94a3b8;
+
+  --radius-card: 16px;
+  --radius-chip: 10px;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Figures must not jitter as they change. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The 11px uppercase label from the screenshots. */
+.label {
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
