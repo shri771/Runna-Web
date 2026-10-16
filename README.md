@@ -6,8 +6,8 @@ per-interval pace targets, lets you customise and rearrange it, links your
 Strava activities back to the planned sessions, and tracks your progress
 against the plan.
 
-> Work in progress. The design specification is complete; implementation is
-> next.
+> Work in progress. Specification complete, project scaffolded, and the plan
+> generation engine is built and tested. Screens are next.
 
 ## Documentation
 
@@ -39,16 +39,46 @@ Full specification in [`docs/`](./docs/) — start with the
 Next.js 15 · TypeScript · Tailwind + shadcn/ui · Neon Postgres + Drizzle ·
 Auth.js · Strava API · Vercel. Every component has a free tier.
 
+## Local setup
+
+```bash
+cp .env.example .env.local   # fill in DATABASE_URL and the secrets
+npm install
+npm run db:generate          # already committed as drizzle/0000_initial_schema.sql
+npm run db:migrate
+npm run dev
+```
+
+```bash
+npm test         # plan engine: 53 unit tests
+npm run lint     # includes the plan-engine purity rule
+npm run build
+```
+
 ## Status
 
 | Milestone | State |
 |---|---|
-| Design specification | done |
-| Project scaffold | not started |
-| Plan engine | not started |
-| Screens | not started |
+| Design specification | done — 18 docs |
+| Project scaffold | done — builds, lints, typechecks |
+| Database schema | done — 17 tables, migration committed |
+| **Plan engine** | **done — 53 tests passing** |
+| Auth | not started |
+| Screens | not started — routes stubbed |
 | Strava integration | not started |
 | Deployment | not started |
+
+### What the plan engine already does
+
+Takes a goal race, a date, available days and current fitness, and returns a
+full periodised plan: base/build/peak/taper phases, a weekly volume curve that
+respects the user's mileage ceiling with cutback weeks and a taper, a long-run
+progression, constraint-based day scheduling (no two hard sessions back to
+back), and 13 session templates rendered as structured steps with per-interval
+pace targets derived from the runner's own race result via Riegel.
+
+It is pure TypeScript — no database, no React, no network — enforced by an
+ESLint rule, which is why it can be tested without either.
 
 ---
 
