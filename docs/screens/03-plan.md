@@ -36,7 +36,7 @@ to every customisation. This is workflow **W2** and half of **W5**.
 │ │  PACE INSIGHTS                           › │ │
 │ └────────────────────────────────────────────┘ │
 ├────────────────────────────────────────────────┤
-│  Today   Plan   Calendar  Progress  Settings   │
+│  Today   Plan   Calendar   Link   Progress     │
 └────────────────────────────────────────────────┘
 ```
 

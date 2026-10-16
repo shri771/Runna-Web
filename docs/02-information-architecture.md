@@ -3,8 +3,13 @@
 ## Navigation model
 
 The screenshots show a 5-tab mobile app: **Today · Plan · Calendar · Progress ·
-Support**. We keep the first four and replace *Support* with **Settings**,
-because Support is a help-centre link rather than application functionality.
+Support**. We keep the first four, drop *Support* (a help-centre link, not
+application functionality), and use the freed slot for **Link** — the Strava
+reconciliation inbox, which is how tracking works in this app.
+
+Final tab bar: **Today · Plan · Calendar · Link · Progress**. Settings lives
+behind the avatar in the header, which is already present on every screen in
+the reference screenshots.
 
 ```
 ┌─ Public ─────────────────────────────────────────────┐
@@ -21,8 +26,9 @@ because Support is a help-centre link rather than application functionality.
 │  /today            Daily home              [tab 1]   │
 │  /plan             Plan overview           [tab 2]   │
 │  /calendar         Agenda / rearranging    [tab 3]   │
-│  /progress         Analytics + records     [tab 4]   │
-│  /settings         Profile + integrations  [tab 5]   │
+│  /link             Link Strava runs        [tab 4]   │
+│  /progress         Analytics + records     [tab 5]   │
+│  /settings         Profile + integrations  (avatar)  │
 └──────────────────────────────────────────────────────┘
 ┌─ Pushed routes (full page, with back) ───────────────┐
 │  /workouts/[id]            Workout detail            │
@@ -56,8 +62,11 @@ data loader. Never trust the client for ownership.
 | Today | sun | `/today` | dot if today's workout incomplete |
 | Plan | clipboard | `/plan` | — |
 | Calendar | calendar | `/calendar` | — |
+| Link | link-2 | `/link` | **count** of suggestions needing review |
 | Progress | bar-chart | `/progress` | dot if new PR unseen |
-| Settings | user | `/settings` | dot if Strava token expired |
+
+Settings is reached from the avatar (top-left on every screen), badged when the
+Strava token is revoked.
 
 ## Responsive strategy
 
@@ -109,6 +118,7 @@ larger and the week totals read better.
 | S5 | Workout Detail | no | Execute one session; link the Strava activity |
 | S6 | Progress | yes | Long-run trend and personal records |
 | S7 | Settings | no | Profile, units, Strava connection |
+| S8 | Link | no | Reconcile Strava runs against planned workouts |
 
 ## Primary user paths
 
@@ -146,6 +156,7 @@ Deep-linkable, shareable, and survives refresh:
 | `?date=` | Today, Calendar | `/today?date=2026-10-17` |
 | `?week=` | Plan, Calendar | `/calendar?week=3` |
 | `?tab=` | Progress | `/progress?tab=performance` |
+| `?section=` | Link | `/link?section=review` |
 | `?range=` | Progress | `/progress?range=month` |
 | `?next=` | Sign-in | `/sign-in?next=/calendar` |
 

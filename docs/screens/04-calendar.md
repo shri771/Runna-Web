@@ -39,7 +39,7 @@ second half of workflow **W2**.
 │  WED │ │Tempo 2km Repeats│     + Add           │
 │   21 │ │7.5km            │                     │
 ├────────────────────────────────────────────────┤
-│  Today   Plan   Calendar  Progress  Settings   │
+│  Today   Plan   Calendar   Link   Progress     │
 └────────────────────────────────────────────────┘
 ```
 

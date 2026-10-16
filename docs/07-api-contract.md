@@ -198,6 +198,34 @@ The webhook route is the only unauthenticated mutating endpoint. It's protected
 by matching `subscription_id` against the stored value, the unguessable
 `verify_token` used at subscription time, and full idempotency on replay.
 
+### `GET /api/link/inbox`
+Backs the [Link tab](./screens/08-link.md) in one round trip.
+
+```jsonc
+{
+  "connection": { "connected": true, "lastSyncAt": "2026-10-17T00:02:11Z",
+                  "status": "ACTIVE" },
+  "needsReview": [
+    { "activity": { "id": "…", "name": "Morning Run", "startedAtLocal": "2026-10-16T06:42",
+                    "distanceM": 6120, "movingTimeS": 1908, "avgPaceSPerKm": 312 },
+      "suggestion": { "workoutId": "…", "name": "Tempo 2-1-1", "date": "2026-10-16",
+                      "plannedDistanceM": 6000, "score": 0.91 } }
+  ],
+  "unlinkedActivities": [ /* … */ ],
+  "waitingWorkouts":    [ /* past, SCHEDULED, unlinked */ ],
+  "counts": { "needsReview": 2, "unlinked": 5, "waiting": 3 }
+}
+```
+
+| Method | Path | Notes |
+|---|---|---|
+| `POST` | `/api/link/dismiss` | `{ activityId, workoutId }` — suppress one suggestion so it isn't re-proposed |
+| `GET` | `/api/link/candidates?activityId=` | Ranked workouts for an activity |
+| `GET` | `/api/link/candidates?workoutId=` | Ranked activities for a workout |
+
+Linking itself reuses `POST /api/workouts/:id/link` — there is no second
+implementation.
+
 ---
 
 ## Progress

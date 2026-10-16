@@ -35,10 +35,10 @@ running today, and am I on track?**
 │ │  ▁▃▂         │ │ session in   │             │
 │ └──────────────┘ └──────────────┘             │
 │       ┌────────────────────────┐               │
-│       │  ▶  Record workout     │  floating     │
+│       │  🔗  Link a run        │  floating     │
 │       └────────────────────────┘               │
 ├────────────────────────────────────────────────┤
-│  Today   Plan   Calendar  Progress  Settings   │
+│  Today   Plan   Calendar   Link   Progress     │
 └────────────────────────────────────────────────┘
 ```
 
@@ -105,16 +105,21 @@ A horizontally scrolling row of computed cards from
 
 "EXPAND" opens a full-height sheet with all cards stacked and explained.
 
-### Record workout (floating pill)
-A web app can't reliably record GPS in the background, so this is honest about
-what it does. It opens a sheet with three options:
+### Link a run (floating pill)
+A browser can't reliably record GPS in the background, so the app doesn't
+pretend to track runs. Tracking here means **linking what you already recorded
+in Strava** to what you were supposed to run.
 
-1. **Log it manually** — distance, duration, date → creates a `MANUAL` activity
-   and links it to today's workout in one step.
-2. **Link a Strava activity** — the picker from [S5](./05-workout-detail.md).
-3. **Mark complete** — no data, just status.
+The pill routes to the **[Link tab](./08-link.md)** when there is anything to
+reconcile. When today's workout is the only thing outstanding it short-circuits
+to a sheet with three options:
 
-If Strava isn't connected, option 2 becomes "Connect Strava".
+1. **Link a Strava activity** — the picker from [S5](./05-workout-detail.md)
+2. **Log it manually** — distance, duration, date → a `MANUAL` activity, linked
+   to today's workout in one step
+3. **Mark complete** — no data, just status
+
+If Strava isn't connected, option 1 becomes "Connect Strava".
 
 ## Interactions
 

@@ -38,7 +38,7 @@ how it's *trending* (Performance).
 │ │   5K        5MI       10K                  │ │
 │ └────────────────────────────────────────────┘ │
 ├────────────────────────────────────────────────┤
-│  Today   Plan   Calendar  Progress  Settings   │
+│  Today   Plan   Calendar   Link   Progress     │
 └────────────────────────────────────────────────┘
 ```
 

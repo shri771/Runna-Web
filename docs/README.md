@@ -28,6 +28,7 @@ this order.
 | [S5 — Workout Detail](./screens/05-workout-detail.md) | Step breakdown, pace targets, **Link Strava activity**, compliance |
 | [S6 — Progress](./screens/06-progress.md) | Workouts / Performance tabs, charts, Personal Records |
 | [S7 — Settings & Connections](./screens/07-settings.md) | Profile, units, Strava connect/disconnect, data export |
+| [S8 — Link](./screens/08-link.md) | **Tracking**: reconcile Strava runs against planned workouts |
 
 ### Engineering
 | Doc | What's in it |
