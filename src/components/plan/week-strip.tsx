@@ -59,13 +59,15 @@ export function WeekStrip({
             aria-current={isSelected ? 'date' : undefined}
             className="flex flex-col items-center gap-1 py-1"
           >
-            <span className="text-[11px] font-medium text-ash-dim">{LETTERS[day.weekday]}</span>
+            <span className="text-[11px] font-medium tracking-wide text-ash-dim">
+              {LETTERS[day.weekday]}
+            </span>
 
             <span
               className={cn(
                 'fig grid size-9 place-items-center rounded-full text-[17px] font-semibold transition',
-                day.isToday && 'bg-amber text-ink',
-                !day.isToday && isSelected && 'bg-slate-3 text-chalk',
+                day.isToday && 'bg-amber font-bold text-ink',
+                !day.isToday && isSelected && 'border border-hairline-strong bg-slate-2 text-chalk',
                 !day.isToday && !isSelected && day.missed && 'text-danger',
                 !day.isToday && !isSelected && !day.missed && (day.isPast ? 'text-ash' : 'text-chalk'),
               )}

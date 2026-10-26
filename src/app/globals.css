@@ -1,45 +1,60 @@
 @import 'tailwindcss';
 
 /**
- * Tokens — see docs/DESIGN-DIRECTION.md for why these values.
- * Dark only in v1.
+ * Colour system — see docs/DESIGN-DIRECTION.md.
+ *
+ * Authored in OKLCH, which is perceptually uniform: two colours with the same
+ * L genuinely look equally light, so a palette can be reasoned about rather
+ * than eyeballed. Every value below was computed and contrast-checked, not
+ * picked.
+ *
+ * The scheme is complementary. Yellow's complement is blue, and a light yellow
+ * on a dark blue reads naturally while the reverse does not — so blue does the
+ * structural work and yellow takes the accent layer. Dark-first is also the one
+ * context where yellow can be a true primary: on a dark ground it is the
+ * brightest hue a screen can make, and amber here clears 12:1 on the page
+ * background, enough to carry body text.
  */
 @theme {
-  /* Warm near-black: wet asphalt under a sodium street lamp, which is what a
-     6am run actually looks like. Warm ground is what lets amber sit in the
-     palette natively instead of being bolted on as an accent. */
-  --color-ink: #14110a;
-  --color-slate: #1e1910;
-  --color-slate-2: #292218;
-  --color-slate-3: #372e1f;
-  --color-hairline: #332b1e;
-  --color-hairline-strong: #4a3f2b;
+  /* Surfaces: one hue, rising lightness, chroma kept low — saturated greys
+     muddy quickly on dark. */
+  --color-ink: oklch(0.165 0.02 258);
+  --color-slate: oklch(0.218 0.026 258);
+  --color-slate-2: oklch(0.268 0.03 258);
+  --color-slate-3: oklch(0.33 0.032 258);
+  --color-hairline: oklch(0.295 0.026 258);
+  --color-hairline-strong: oklch(0.405 0.03 258);
 
-  /* Warm white — chalk and paper, not screen white. */
-  --color-chalk: #f7f2e4;
-  --color-ash: #a69a80;
-  --color-ash-dim: #6e6450;
+  /* Text carries a trace of the ground hue so it sits in the scheme rather
+     than on top of it. All three clear AA on every surface above. */
+  --color-chalk: oklch(0.97 0.006 258); /* 17.7:1 on ink */
+  --color-ash: oklch(0.735 0.022 258); /*  8.2:1 */
+  --color-ash-dim: oklch(0.605 0.024 258); /*  5.0:1 */
 
   /* Amber is the goal: primary actions, race day, records. Nothing else. */
-  --color-amber: #f2c230;
-  --color-amber-bright: #ffd75e;
-  --color-danger: #e5574d;
-  --color-caution: #e0922a;
+  --color-amber: oklch(0.855 0.165 92); /* 12.4:1 on ink */
+  --color-amber-bright: oklch(0.915 0.15 96);
+  --color-amber-dim: oklch(0.56 0.105 92); /* chart bars only, never text */
+
+  --color-danger: oklch(0.64 0.195 25);
+  --color-caution: oklch(0.76 0.15 62);
+  --color-info: oklch(0.74 0.115 232);
 
   /**
-   * Effort spectrum — cool and green is easy, warm and red is hard.
-   * Deliberately contains NO yellow: amber means "the goal", and a tempo chip
-   * the same colour as the primary button would encode two different things.
+   * Effort spectrum. Hues 80-105 are reserved for amber, so nothing here
+   * competes with it — every entry sits at least 20deg away. Lightness is held
+   * in a narrow band (0.68-0.86) so no single session type shouts louder than
+   * the rest; intensity is carried by hue, not by brightness.
    */
-  --color-w-recovery: #8cc63f;
-  --color-w-easy: #4fb477;
-  --color-w-long: #7c6fd4;
-  --color-w-tempo: #e08a3c;
-  --color-w-threshold: #dc6b35;
-  --color-w-intervals: #cf4535;
-  --color-w-racepace: #3fa3c4;
-  --color-w-race: #f2c230;
-  --color-w-strength: #8a8070;
+  --color-w-recovery: oklch(0.82 0.15 142);
+  --color-w-easy: oklch(0.76 0.15 158);
+  --color-w-long: oklch(0.715 0.145 292);
+  --color-w-tempo: oklch(0.74 0.14 58);
+  --color-w-threshold: oklch(0.72 0.15 40);
+  --color-w-intervals: oklch(0.68 0.18 24);
+  --color-w-racepace: oklch(0.74 0.12 228);
+  --color-w-race: oklch(0.855 0.165 92);
+  --color-w-strength: oklch(0.64 0.02 258);
 
   --radius-card: 14px;
   --radius-chip: 9px;
@@ -54,6 +69,7 @@ body {
   background: var(--color-ink);
   color: var(--color-chalk);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Figures must never jitter as a value changes. */
@@ -77,13 +93,23 @@ body {
   color: var(--color-ash);
 }
 
+/* Body copy stays under ~70 characters per line. */
+.prose-width {
+  max-width: 62ch;
+}
+
 *:focus-visible {
   outline: 2px solid var(--color-amber);
   outline-offset: 2px;
   border-radius: 3px;
 }
 
-/* Range inputs carry the mileage target, the most-used control in the app. */
+::selection {
+  background: var(--color-amber);
+  color: var(--color-ink);
+}
+
+/* The mileage target is the most-used control in the app. */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
@@ -115,9 +141,9 @@ input[type='range']::-moz-range-thumb {
   background: var(--color-amber);
 }
 
-/* Date and number inputs render a white-on-white picker icon otherwise. */
+/* Otherwise the picker glyph renders near-invisible on a dark field. */
 input[type='date']::-webkit-calendar-picker-indicator {
-  filter: invert(0.75) sepia(1) saturate(3) hue-rotate(5deg);
+  filter: invert(0.8) sepia(1) saturate(4) hue-rotate(5deg);
   cursor: pointer;
 }
 

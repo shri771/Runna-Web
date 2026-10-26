@@ -1,52 +1,77 @@
 import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
+
+const SPECTRUM = [
+  { label: 'Recovery', token: 'var(--color-w-recovery)', h: 26 },
+  { label: 'Easy', token: 'var(--color-w-easy)', h: 38 },
+  { label: 'Long', token: 'var(--color-w-long)', h: 62 },
+  { label: 'Tempo', token: 'var(--color-w-tempo)', h: 78 },
+  { label: 'Threshold', token: 'var(--color-w-threshold)', h: 92 },
+  { label: 'Intervals', token: 'var(--color-w-intervals)', h: 112 },
+  { label: 'Race', token: 'var(--color-w-race)', h: 132 },
+]
 
 export default function Landing() {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-[1100px] flex-col px-6 py-10">
+    <main className="mx-auto flex min-h-dvh w-full max-w-[1040px] flex-col px-6 py-8">
       <header className="flex items-center justify-between">
-        <span className="text-lg font-semibold tracking-tight">Runna Web</span>
-        <Link href="/today" className="text-[14px] text-ash hover:text-chalk">
-          Open the app
+        <span className="text-[17px] font-semibold tracking-tight">Runna Web</span>
+        <Link
+          href="/sign-in"
+          className="text-[14px] text-ash transition-colors hover:text-chalk"
+        >
+          Sign in
         </Link>
       </header>
 
-      <section className="flex flex-1 flex-col justify-center py-16">
-        <h1 className="max-w-[18ch] text-[clamp(34px,6vw,56px)] leading-[1.05] font-semibold tracking-tight">
-          Your race. Your schedule. Your plan.
+      <section className="flex flex-1 flex-col justify-center py-14">
+        <h1 className="max-w-[16ch] text-[clamp(38px,7.5vw,68px)] leading-[0.98] font-bold tracking-[-0.03em]">
+          Your race.
+          <br />
+          Your mileage.
+          <br />
+          <span className="text-amber">Your plan.</span>
         </h1>
-        <p className="mt-5 max-w-[52ch] text-[17px] text-ash">
-          A training plan built around how much you can actually run — with real pace targets on
-          every interval, and one that rebuilds itself when your week changes.
+
+        <p className="prose-width mt-6 text-[17px] leading-relaxed text-ash">
+          Most training plans assume you can run whatever they prescribe. This one is built around
+          the distance you can actually cover each week — and it rebuilds itself when that changes.
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-9 flex flex-wrap items-center gap-3">
           <Link
-            href="/today"
-            className="rounded-full bg-amber px-6 py-3 text-[15px] font-semibold text-ink transition hover:brightness-110"
+            href="/sign-up"
+            className="inline-flex items-center gap-2 rounded-full bg-amber px-6 py-3 text-[15px] font-semibold text-ink transition-colors hover:bg-amber-bright"
           >
-            Build my plan
+            Build my plan <ArrowRight size={16} />
           </Link>
           <Link
-            href="/plan"
-            className="rounded-full border border-hairline-strong px-6 py-3 text-[15px] font-semibold transition hover:bg-slate"
+            href="/sign-in"
+            className="rounded-full border border-hairline-strong px-6 py-3 text-[15px] font-semibold transition-colors hover:border-ash"
           >
-            See a demo plan
+            Open the demo
           </Link>
         </div>
 
-        <ol className="mt-16 grid gap-4 sm:grid-cols-3">
-          {[
-            ['Tell us your race', 'Your date, your days, and how much you run now.'],
-            ['Get a real plan', 'Periodised weeks, structured sessions, pace targets.'],
-            ['Link your Strava runs', 'Every run matched to the workout it was meant to be.'],
-          ].map(([title, body], i) => (
-            <li key={title} className="rounded-[16px] border border-hairline bg-slate p-5">
-              <span className="unit">Step {i + 1}</span>
-              <h2 className="mt-1 text-[17px] font-semibold">{title}</h2>
-              <p className="mt-1 text-[14px] text-ash">{body}</p>
-            </li>
-          ))}
-        </ol>
+        {/* Every session is drawn as its own intensity profile, so the clearest
+            way to explain the product is to show the spectrum itself. */}
+        <figure className="mt-16 border-t border-hairline pt-8">
+          <div className="flex items-end gap-2 sm:gap-4" aria-hidden>
+            {SPECTRUM.map((s) => (
+              <div key={s.label} className="flex flex-1 flex-col items-center gap-2">
+                <span
+                  className="w-full rounded-t-[2px]"
+                  style={{ height: s.h, backgroundColor: s.token }}
+                />
+                <span className="text-[10px] text-ash-dim sm:text-[11px]">{s.label}</span>
+              </div>
+            ))}
+          </div>
+          <figcaption className="prose-width mt-6 text-[15px] text-ash">
+            Easy to hard, left to right. Every session in your plan is one of these, with its own
+            pace target worked out from a race you have actually run.
+          </figcaption>
+        </figure>
       </section>
 
       <footer className="border-t border-hairline py-6 text-[13px] text-ash-dim">

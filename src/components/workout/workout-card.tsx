@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { BookOpen, Check, Link2, Loader2, Zap } from 'lucide-react'
+import { ArrowRight, Check, Link2, Loader2, Zap } from 'lucide-react'
 import { Silhouette } from '@/components/workout/silhouette'
 import { cn } from '@/lib/cn'
 import type { WorkoutStep, WorkoutType } from '@/lib/plan-engine/types'
@@ -22,118 +23,129 @@ export type CardWorkout = {
   activity: { id: string; name: string; distanceM: number; movingTimeS: number; avgPaceSPerKm: number } | null
 }
 
+/**
+ * The hero of the Today screen, so it is the one element allowed to be loud:
+ * the distance is set large in the session's own colour, and the silhouette
+ * runs the full width beneath it. Everything else on the screen stays quiet.
+ */
 export function WorkoutCard({ workout, dateLabel }: { workout: CardWorkout; dateLabel: string }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
-  const [optimisticDone, setOptimisticDone] = useState(workout.status === 'COMPLETED')
+  const [done, setDone] = useState(workout.status === 'COMPLETED')
   const [error, setError] = useState<string | null>(null)
 
-  const done = optimisticDone
   const color = WORKOUT_COLOR[workout.type]
 
   async function toggle() {
-    const nextDone = !done
-    setOptimisticDone(nextDone)
+    const next = !done
+    setDone(next)
     setError(null)
     try {
       const res = await fetch(`/api/workouts/${workout.id}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ status: nextDone ? 'COMPLETED' : 'SCHEDULED' }),
+        body: JSON.stringify({ status: next ? 'COMPLETED' : 'SCHEDULED' }),
       })
       if (!res.ok) throw new Error()
       startTransition(() => router.refresh())
     } catch {
-      setOptimisticDone(!nextDone) // roll back, and say so
+      setDone(!next)
       setError('Could not save that. Try again.')
     }
   }
 
   return (
-    <article className="overflow-hidden rounded-[14px] border border-hairline bg-slate">
-      <div className="flex">
-        <span aria-hidden className="w-[5px] shrink-0" style={{ backgroundColor: color }} />
+    <article className="overflow-hidden rounded-[14px] border border-hairline-strong bg-slate">
+      {/* A full-width rule in the session colour, rather than a thin side bar:
+          the type is the first thing to register. */}
+      <span aria-hidden className="block h-1" style={{ backgroundColor: color }} />
 
-        <div className="min-w-0 flex-1 p-4">
-          <div className="flex items-start gap-3">
-            <div className="min-w-0 flex-1">
-              <a
-                href={`/workouts/${workout.id}`}
-                className={cn(
-                  'text-[18px] leading-tight font-semibold hover:underline',
-                  done && 'text-ash',
-                )}
-              >
-                {workout.name}
-              </a>
-              <p className="mt-1 text-[13px] text-ash">
-                {dateLabel} · {formatDurationEstimate(workout.estDurationMinS, workout.estDurationMaxS)}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={toggle}
-              disabled={pending}
-              aria-pressed={done}
-              aria-label={done ? `Mark ${workout.name} not done` : `Mark ${workout.name} done`}
+      <div className="p-5">
+        <div className="flex items-start gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-[12px] font-semibold tracking-wide" style={{ color }}>
+              {WORKOUT_LABEL[workout.type]}
+            </p>
+            <Link
+              href={`/workouts/${workout.id}`}
               className={cn(
-                'grid size-9 shrink-0 place-items-center rounded-full border transition',
-                done ? 'border-amber bg-amber text-ink' : 'border-hairline-strong text-ash hover:text-chalk',
+                'mt-1 block text-[22px] leading-tight font-semibold tracking-tight hover:underline',
+                done && 'text-ash',
               )}
             >
-              {pending ? <Loader2 size={16} className="animate-spin" /> : done ? <Check size={18} /> : null}
-            </button>
+              {workout.name}
+            </Link>
+            <p className="mt-1 text-[13px] text-ash">{dateLabel}</p>
           </div>
 
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="fig text-[26px] leading-none font-semibold" style={{ color }}>
-              {formatDistance(workout.plannedDistanceM)}
-            </span>
-            <span className="text-[13px] text-ash">{WORKOUT_LABEL[workout.type]}</span>
-          </div>
-
-          <Silhouette
-            steps={workout.steps}
-            type={workout.type}
-            height={30}
-            className="mt-3"
-            label={`${workout.name} intensity profile`}
-          />
-
-          {workout.activity && (
-            <p className="mt-3 flex items-center gap-1.5 text-[13px] text-ash">
-              <Zap size={13} style={{ color }} />
-              {formatDistance(workout.activity.distanceM)} · {formatDuration(workout.activity.movingTimeS)} ·{' '}
-              {formatPace(workout.activity.avgPaceSPerKm)}
-            </p>
-          )}
-
-          {!workout.activity && done && (
-            <p className="mt-3 text-[13px] text-ash">Marked done without a run attached.</p>
-          )}
-
-          <div className="mt-3 flex gap-4">
-            <a
-              href={`/workouts/${workout.id}`}
-              className="inline-flex items-center gap-1.5 text-[13px] text-ash hover:text-chalk"
-            >
-              <BookOpen size={13} /> How to run it
-            </a>
-            {!done && (
-              <a
-                href="/link"
-                className="inline-flex items-center gap-1.5 text-[13px] text-ash hover:text-chalk"
-              >
-                <Link2 size={13} /> Link a run
-              </a>
+          <button
+            type="button"
+            onClick={toggle}
+            disabled={pending}
+            aria-pressed={done}
+            aria-label={done ? `Mark ${workout.name} not done` : `Mark ${workout.name} done`}
+            className={cn(
+              'grid size-10 shrink-0 place-items-center rounded-full border-2 transition-colors',
+              done
+                ? 'border-amber bg-amber text-ink'
+                : 'border-hairline-strong text-ash hover:border-amber hover:text-amber',
             )}
-          </div>
+          >
+            {pending ? <Loader2 size={17} className="animate-spin" /> : done ? <Check size={20} strokeWidth={3} /> : null}
+          </button>
+        </div>
 
-          {error && (
-            <p role="alert" className="mt-2 text-[13px] text-danger">
-              {error}
+        <div className="mt-5 flex items-end gap-5">
+          <div>
+            <p className="fig text-[40px] leading-[0.9] font-bold" style={{ color }}>
+              {formatDistance(workout.plannedDistanceM)}
             </p>
+            <p className="unit mt-1.5">Distance</p>
+          </div>
+          <div>
+            <p className="fig text-[40px] leading-[0.9] font-bold text-chalk">
+              {formatDurationEstimate(workout.estDurationMinS, workout.estDurationMaxS).replace(/m/g, '')}
+            </p>
+            <p className="unit mt-1.5">Minutes</p>
+          </div>
+        </div>
+
+        <Silhouette
+          steps={workout.steps}
+          type={workout.type}
+          height={44}
+          className="mt-5"
+          label={`${workout.name} intensity profile`}
+        />
+
+        {workout.activity && (
+          <p className="fig mt-4 flex items-center gap-2 border-t border-hairline pt-4 text-[14px] text-ash">
+            <Zap size={14} style={{ color }} />
+            {formatDistance(workout.activity.distanceM)} · {formatDuration(workout.activity.movingTimeS)} ·{' '}
+            {formatPace(workout.activity.avgPaceSPerKm)}
+          </p>
+        )}
+
+        {error && (
+          <p role="alert" className="mt-3 text-[13px] text-danger">
+            {error}
+          </p>
+        )}
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href={`/workouts/${workout.id}`}
+            className="inline-flex items-center gap-1.5 rounded-full bg-amber px-4 py-2 text-[14px] font-semibold text-ink transition-colors hover:bg-amber-bright"
+          >
+            How to run it <ArrowRight size={14} />
+          </Link>
+          {!done && (
+            <Link
+              href="/link"
+              className="inline-flex items-center gap-1.5 rounded-full border border-hairline-strong px-4 py-2 text-[14px] font-medium transition-colors hover:border-ash"
+            >
+              <Link2 size={14} /> Link a run
+            </Link>
           )}
         </div>
       </div>

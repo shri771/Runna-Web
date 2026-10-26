@@ -46,45 +46,44 @@ export default async function PlanPage() {
         user={{ name: session.user.name ?? null, image: session.user.image ?? null }}
       />
 
-      {/* The hero leads with the race, because that is the fact the whole plan
-          hangs off — not a stat tile. */}
-      <section className="rounded-[14px] border border-hairline bg-slate p-5">
-        <div className="flex items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <h2 className="text-[24px] leading-tight font-semibold tracking-tight">
-              {plan.raceName || GOAL_LABEL[plan.goal as Goal]}
-            </h2>
-            {plan.raceDate ? (
-              <p className="mt-1 text-[14px] text-ash">
-                {new Date(`${plan.raceDate}T00:00:00Z`).toLocaleDateString('en-GB', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                  timeZone: 'UTC',
-                })}
-              </p>
-            ) : (
-              <p className="mt-1 text-[14px] text-ash">{plan.totalWeeks} week block</p>
-            )}
-          </div>
-
-          <span
-            aria-hidden
-            className="fig grid size-14 shrink-0 place-items-center rounded-full border border-amber bg-amber/15 text-[15px] font-bold text-amber-bright"
-          >
-            {GOAL_BADGE[plan.goal as Goal]}
-          </span>
-        </div>
-
-        {daysToRace !== null && daysToRace >= 0 && (
-          <p className="fig mt-4 text-[15px]">
-            <span className="text-[32px] leading-none font-bold">{daysToRace}</span>
-            <span className="ml-2 text-[14px] text-ash">
-              {daysToRace === 1 ? 'day to go' : 'days to go'}
-            </span>
+      {/* The countdown is the loudest thing on the screen, because it is the
+          fact the entire plan hangs off. */}
+      <section className="overflow-hidden rounded-[14px] border border-hairline-strong bg-slate">
+        <span aria-hidden className="block h-1 bg-amber" />
+        <div className="p-5">
+          <p className="text-[12px] font-semibold tracking-wide text-amber">
+            {plan.goal === 'BUILD_MILEAGE' ? 'Mileage block' : 'Goal race'}
           </p>
-        )}
+          <h2 className="mt-1 text-[26px] leading-tight font-bold tracking-tight">
+            {plan.raceName || GOAL_LABEL[plan.goal as Goal]}
+          </h2>
+
+          {daysToRace !== null && daysToRace >= 0 ? (
+            <div className="mt-5 flex items-end gap-6">
+              <div>
+                <p className="fig text-[56px] leading-[0.85] font-bold text-amber">{daysToRace}</p>
+                <p className="unit mt-2">{daysToRace === 1 ? 'Day to go' : 'Days to go'}</p>
+              </div>
+              <div className="pb-1">
+                <p className="fig text-[22px] leading-none font-semibold">
+                  {GOAL_BADGE[plan.goal as Goal]}
+                  <span className="ml-1 text-[13px] font-medium text-ash">km</span>
+                </p>
+                <p className="mt-1 text-[13px] text-ash">
+                  {plan.raceDate &&
+                    new Date(`${plan.raceDate}T00:00:00Z`).toLocaleDateString('en-GB', {
+                      weekday: 'short',
+                      day: 'numeric',
+                      month: 'long',
+                      timeZone: 'UTC',
+                    })}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-3 text-[14px] text-ash">{plan.totalWeeks} week block</p>
+          )}
+        </div>
       </section>
 
       <nav aria-label="Plan actions" className="mt-4 grid grid-cols-3 gap-2">
@@ -96,7 +95,7 @@ export default async function PlanPage() {
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-2 rounded-[14px] border border-hairline bg-slate px-2 py-4 text-[13px] text-ash transition hover:text-chalk"
+            className="flex flex-col items-center gap-2 rounded-[14px] border border-hairline bg-slate/60 px-2 py-4 text-[13px] text-ash transition-colors hover:border-hairline-strong hover:text-chalk"
           >
             <Icon size={19} />
             {label}
@@ -104,7 +103,7 @@ export default async function PlanPage() {
         ))}
       </nav>
 
-      <section className="mt-4 rounded-[14px] border border-hairline bg-slate p-5">
+      <section className="mt-4 rounded-[14px] border border-hairline bg-slate/60 p-5">
         <h2 className="text-[15px] font-semibold">Week by week</h2>
         <p className="mt-0.5 text-[13px] text-ash">
           The dips are deliberate — cutback weeks let the training land.

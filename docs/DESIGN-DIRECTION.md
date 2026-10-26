@@ -22,6 +22,56 @@ insights tells the reader nothing. Uppercase survives in exactly one place:
 unit labels under a figure (`KILOMETERS`, `TIME`), which is race-results and
 timing-display convention.
 
+## Third pass: a computed palette
+
+The second pass was rejected: still flat. Two reasons, both findable in the
+theory rather than by taste.
+
+**The ground was working against the accent.** A warm brown-black is
+*analogous* to amber — adjacent on the hue wheel — so there was almost no hue
+contrast between the accent and what sat behind it, and amber read muddy
+instead of luminous. Yellow's complement is blue, and a light yellow on a dark
+blue reads naturally while the reverse feels wrong even at identical contrast
+ratios, because it runs with the inherent lightness of those hues rather than
+against it. So the ground moved to a deep blue (hue 258) and amber stayed where
+it was. Blue carries the structure, amber carries the accent layer.
+
+**The values were eyeballed.** Everything is now authored in **OKLCH**, which is
+perceptually uniform: two colours at the same L genuinely look equally light, so
+lightness steps can be reasoned about instead of guessed. Surfaces climb in even
+L steps at deliberately low chroma, because saturated greys muddy fast on dark.
+
+Yellow as a true primary is defensible precisely because this is a dark-first
+product: on a dark ground yellow is the brightest hue a screen can produce, and
+this amber measures **12.4:1 on the page background** — enough to carry body
+text, not just decoration. That is the one context where yellow can lead.
+
+### Measured, not assumed
+
+| Colour | On `ink` | On `slate` | AA body (4.5) |
+|---|---|---|---|
+| `chalk` | 17.7:1 | 16.0:1 | pass |
+| `ash` | 8.2:1 | 7.4:1 | pass |
+| `ash-dim` | 5.0:1 | 4.5:1 | pass |
+| `amber` | 12.4:1 | 11.2:1 | pass |
+| `danger` | 5.2:1 | 4.7:1 | pass |
+
+`ash-dim` originally came out at 4.1:1 and was raised until it cleared.
+
+Every effort colour clears 4.4:1 on a card, sits at least 20° of hue away from
+amber, and is held inside a narrow lightness band (0.68–0.86) so intensity is
+carried by **hue**, not by brightness — otherwise the hardest session would also
+be the dimmest chip on the screen. The band was initially 0.23 wide and was
+tightened to 0.175.
+
+### Hierarchy
+
+Colour was only half of why it read flat. Every card had the same border, the
+same fill and the same weight, so nothing told the eye where to land. Cards now
+come in two weights — `raised` for the one thing a screen is about, `quiet` for
+everything else — and each screen has exactly one large figure: the session
+distance on Today, the day count on Plan, the week's volume on Progress.
+
 ## Second pass: amber
 
 The client asked for a yellow-toned palette. The obvious move — keep the cold

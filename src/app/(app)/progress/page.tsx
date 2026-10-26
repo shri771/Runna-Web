@@ -31,7 +31,9 @@ export default async function ProgressPage() {
         user={{ name: session.user.name ?? null, image: session.user.image ?? null }}
       />
 
-      <section className="rounded-[14px] border border-hairline bg-slate p-5">
+      <section className="overflow-hidden rounded-[14px] border border-hairline-strong bg-slate">
+        <span aria-hidden className="block h-1 bg-amber" />
+        <div className="p-5">
         <div className="flex items-baseline justify-between">
           <h2 className="text-[15px] font-semibold">This week</h2>
           {deltaPct !== null && (
@@ -42,11 +44,24 @@ export default async function ProgressPage() {
           )}
         </div>
 
-        <dl className="mt-4 grid grid-cols-3 gap-4">
-          <Stat unit="Kilometres" value={(thisWeek.distanceM / 1000).toFixed(1)} />
-          <Stat unit="Time" value={formatDuration(thisWeek.movingTimeS)} />
-          <Stat unit="Runs" value={String(thisWeek.count)} />
-        </dl>
+        <div className="mt-4 flex items-end gap-7">
+          <div>
+            <p className="fig text-[52px] leading-[0.85] font-bold text-amber">
+              {(thisWeek.distanceM / 1000).toFixed(1)}
+            </p>
+            <p className="unit mt-2">Kilometres</p>
+          </div>
+          <div className="pb-1">
+            <p className="fig text-[22px] leading-none font-semibold">
+              {formatDuration(thisWeek.movingTimeS)}
+            </p>
+            <p className="unit mt-1.5">Time</p>
+          </div>
+          <div className="pb-1">
+            <p className="fig text-[22px] leading-none font-semibold">{thisWeek.count}</p>
+            <p className="unit mt-1.5">Runs</p>
+          </div>
+        </div>
 
         <VolumeChart buckets={buckets} className="mt-5" />
 
@@ -55,10 +70,11 @@ export default async function ProgressPage() {
             Nothing logged yet. Link a run and it will show up here.
           </p>
         )}
+        </div>
       </section>
 
       {adherence.scheduled > 0 && (
-        <section className="mt-4 rounded-[14px] border border-hairline bg-slate p-5">
+        <section className="mt-4 rounded-[14px] border border-hairline bg-slate/60 p-5">
           <h2 className="text-[15px] font-semibold">Sticking to the plan</h2>
           <p className="fig mt-3 text-[32px] leading-none font-bold">
             {adherence.pct}%
@@ -162,11 +178,3 @@ export default async function ProgressPage() {
   )
 }
 
-function Stat({ unit, value }: { unit: string; value: string }) {
-  return (
-    <div>
-      <dd className="fig text-[26px] leading-none font-bold">{value}</dd>
-      <dt className="unit mt-1">{unit}</dt>
-    </div>
-  )
-}
