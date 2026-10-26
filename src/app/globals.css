@@ -5,36 +5,41 @@
  * Dark only in v1.
  */
 @theme {
-  /* Ground is cold and faintly blue, not neutral black: this app is opened
-     before sunrise more than at any other time. */
-  --color-ink: #0f141b;
-  --color-slate: #19202a;
-  --color-slate-2: #232c38;
-  --color-slate-3: #2e3846;
-  --color-hairline: #28313d;
-  --color-hairline-strong: #3b4654;
+  /* Warm near-black: wet asphalt under a sodium street lamp, which is what a
+     6am run actually looks like. Warm ground is what lets amber sit in the
+     palette natively instead of being bolted on as an accent. */
+  --color-ink: #14110a;
+  --color-slate: #1e1910;
+  --color-slate-2: #292218;
+  --color-slate-3: #372e1f;
+  --color-hairline: #332b1e;
+  --color-hairline-strong: #4a3f2b;
 
-  --color-chalk: #f4f6f8;
-  --color-ash: #8a95a3;
-  --color-ash-dim: #5a6472;
+  /* Warm white — chalk and paper, not screen white. */
+  --color-chalk: #f7f2e4;
+  --color-ash: #a69a80;
+  --color-ash-dim: #6e6450;
 
-  /* Primary action is chalk, not a brand colour — green is reserved for
-     effort. The reference screenshot's main button is already a white pill. */
-  --color-rust: #b8472a;
-  --color-rust-bright: #d9552f;
-  --color-danger: #e5484d;
-  --color-caution: #e3a008;
+  /* Amber is the goal: primary actions, race day, records. Nothing else. */
+  --color-amber: #f2c230;
+  --color-amber-bright: #ffd75e;
+  --color-danger: #e5574d;
+  --color-caution: #e0922a;
 
-  /* Effort spectrum. Functional, not decorative: the user scans by these. */
-  --color-w-recovery: #a3e635;
-  --color-w-easy: #4ade80;
-  --color-w-long: #a855f7;
-  --color-w-tempo: #facc15;
-  --color-w-threshold: #fb923c;
-  --color-w-intervals: #ef4444;
-  --color-w-racepace: #38bdf8;
-  --color-w-race: #b8472a;
-  --color-w-strength: #94a3b8;
+  /**
+   * Effort spectrum — cool and green is easy, warm and red is hard.
+   * Deliberately contains NO yellow: amber means "the goal", and a tempo chip
+   * the same colour as the primary button would encode two different things.
+   */
+  --color-w-recovery: #8cc63f;
+  --color-w-easy: #4fb477;
+  --color-w-long: #7c6fd4;
+  --color-w-tempo: #e08a3c;
+  --color-w-threshold: #dc6b35;
+  --color-w-intervals: #cf4535;
+  --color-w-racepace: #3fa3c4;
+  --color-w-race: #f2c230;
+  --color-w-strength: #8a8070;
 
   --radius-card: 14px;
   --radius-chip: 9px;
@@ -60,8 +65,8 @@ body {
 
 /**
  * Uppercase survives in exactly one place: the unit label under a figure
- * (KILOMETERS, TIME) — race-results and timing-display convention. It is not
- * for section eyebrows, which say nothing the heading does not already say.
+ * (KILOMETRES, TIME) — race-results and timing-display convention. Not for
+ * section eyebrows, which say nothing the heading does not already say.
  */
 .unit {
   font-size: 10px;
@@ -73,7 +78,7 @@ body {
 }
 
 *:focus-visible {
-  outline: 2px solid var(--color-chalk);
+  outline: 2px solid var(--color-amber);
   outline-offset: 2px;
   border-radius: 3px;
 }
@@ -95,7 +100,7 @@ input[type='range']::-webkit-slider-thumb {
   height: 18px;
   margin-top: -7.5px;
   border-radius: 999px;
-  background: var(--color-chalk);
+  background: var(--color-amber);
 }
 input[type='range']::-moz-range-track {
   height: 3px;
@@ -107,7 +112,13 @@ input[type='range']::-moz-range-thumb {
   height: 18px;
   border: 0;
   border-radius: 999px;
-  background: var(--color-chalk);
+  background: var(--color-amber);
+}
+
+/* Date and number inputs render a white-on-white picker icon otherwise. */
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.75) sepia(1) saturate(3) hue-rotate(5deg);
+  cursor: pointer;
 }
 
 @media (prefers-reduced-motion: reduce) {

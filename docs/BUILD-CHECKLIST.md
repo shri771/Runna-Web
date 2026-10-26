@@ -30,3 +30,11 @@ artifacts are reachable even if the lower items get cut.
 
 ## Cut
 Webhooks · per-rep lap analysis · month grid · `/settings/debug` · Plan Guide
+
+## Round 2 — from local testing (26 Oct)
+- [x] B1. Hydration warning from the Dark Reader extension
+- [x] B2. "Connect Strava" dead-loops Link ↔ Settings; neither connects anything
+- [x] F1. Explain each run type: what it is and how to run it
+- [x] F2. Week navigation on Today
+- [x] F3. Delete a plan, then be able to build a new one
+- [x] F4. Yellow-toned palette (frontend-design pass)

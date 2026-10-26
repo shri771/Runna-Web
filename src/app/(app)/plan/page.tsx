@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { CalendarRange, Link2, SlidersHorizontal } from 'lucide-react'
+import { BookOpen, CalendarRange, Link2 } from 'lucide-react'
 import { AppHeader } from '@/components/nav/app-header'
 import { MileageChart } from '@/components/plan/mileage-chart'
 import { auth } from '@/lib/auth'
@@ -71,7 +71,7 @@ export default async function PlanPage() {
 
           <span
             aria-hidden
-            className="fig grid size-14 shrink-0 place-items-center rounded-full border border-rust bg-rust/15 text-[15px] font-bold text-rust-bright"
+            className="fig grid size-14 shrink-0 place-items-center rounded-full border border-amber bg-amber/15 text-[15px] font-bold text-amber-bright"
           >
             {GOAL_BADGE[plan.goal as Goal]}
           </span>
@@ -91,7 +91,7 @@ export default async function PlanPage() {
         {[
           { href: '/calendar', label: 'Calendar', Icon: CalendarRange },
           { href: '/link', label: 'Link runs', Icon: Link2 },
-          { href: '/settings', label: 'Settings', Icon: SlidersHorizontal },
+          { href: '/plan/guide', label: 'Run types', Icon: BookOpen },
         ].map(({ href, label, Icon }) => (
           <Link
             key={href}

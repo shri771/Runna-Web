@@ -57,7 +57,23 @@ export default async function TodayPage({
         </p>
       )}
 
-      <WeekStrip strip={strip} selected={date} />
+      <WeekStrip
+        strip={strip}
+        selected={date}
+        weekLabel={
+          week
+            ? `Week ${week.weekNo} of ${data.plan.totalWeeks}${week.isCutback ? ' · cutback' : ''}`
+            : 'Outside your plan'
+        }
+      />
+
+      {date !== today && (
+        <div className="mt-2 text-center">
+          <Link href="/today" className="text-[13px] text-ash underline hover:text-chalk">
+            Back to today
+          </Link>
+        </div>
+      )}
 
       <div className="mt-6 space-y-4">
         {selected.length === 0 ? (
@@ -98,7 +114,7 @@ export default async function TodayPage({
               <span
                 key={i}
                 className={`h-1.5 flex-1 rounded-full ${
-                  i < totals.completedWorkouts ? 'bg-chalk' : 'bg-slate-3'
+                  i < totals.completedWorkouts ? 'bg-amber' : 'bg-slate-3'
                 }`}
               />
             ))}

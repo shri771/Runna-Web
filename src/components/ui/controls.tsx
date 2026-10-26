@@ -16,7 +16,7 @@ export function Button({
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[15px] font-semibold transition',
         'disabled:cursor-not-allowed disabled:opacity-40',
-        variant === 'primary' && 'bg-chalk text-ink hover:brightness-110',
+        variant === 'primary' && 'bg-amber text-ink hover:brightness-110',
         variant === 'secondary' && 'border border-hairline-strong text-chalk hover:bg-slate-2',
         variant === 'ghost' && 'text-ash hover:text-chalk',
         className,
@@ -41,7 +41,7 @@ export function OptionCard({
       className={cn(
         'rounded-[12px] border p-4 text-left transition',
         selected
-          ? 'border-chalk bg-chalk/10 text-chalk'
+          ? 'border-amber bg-amber/10 text-chalk'
           : 'border-hairline bg-slate-2 text-ash hover:border-hairline-strong hover:text-chalk',
         className,
       )}
@@ -75,7 +75,7 @@ export function Segmented<T extends string | number>({
           className={cn(
             'flex-1 rounded-[10px] border px-2 py-2 text-center transition',
             o.value === value
-              ? 'border-chalk bg-chalk/10'
+              ? 'border-amber bg-amber/10'
               : 'border-hairline bg-slate-2 hover:border-hairline-strong',
           )}
         >

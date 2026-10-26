@@ -1,4 +1,7 @@
+import { and, eq } from 'drizzle-orm'
 import { requireUserId } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { plans } from '@/lib/db/schema'
 import { AppError, route } from '@/lib/errors'
 import type { PlanRequest } from '@/lib/plan-engine'
 import { checkRateLimit } from '@/lib/rate-limit'
@@ -34,4 +37,27 @@ export const POST = route(async (req: Request) => {
   const { planId, summary } = await createPlan(userId, parsed.data as PlanRequest, { archiveFirst })
 
   return Response.json({ planId, summary }, { status: 201 })
+})
+
+/**
+ * Delete the active plan outright.
+ *
+ * Archiving would keep it out of the way but leave the history half-present;
+ * a user who asks to delete expects it gone, and the cascade takes its weeks,
+ * workouts and links with it. Activities are kept — those are the user's own
+ * record of runs they did, not part of the plan.
+ */
+export const DELETE = route(async () => {
+  const userId = await requireUserId()
+
+  const [active] = await db
+    .select({ id: plans.id })
+    .from(plans)
+    .where(and(eq(plans.userId, userId), eq(plans.status, 'ACTIVE')))
+    .limit(1)
+
+  if (!active) throw new AppError('NOT_FOUND', 'You do not have an active plan.')
+
+  await db.delete(plans).where(eq(plans.id, active.id))
+  return Response.json({ ok: true })
 })

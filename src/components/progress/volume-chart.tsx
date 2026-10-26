@@ -28,7 +28,7 @@ export function VolumeChart({
               <span
                 className={cn(
                   'w-full rounded-t-[2px] transition-[height] duration-500',
-                  isCurrent ? 'bg-chalk' : 'bg-slate-3',
+                  isCurrent ? 'bg-amber' : 'bg-slate-3',
                 )}
                 style={{ height: `${Math.max(b.distanceM === 0 ? 2 : 6, (b.distanceM / peak) * 100)}%` }}
               />

@@ -72,7 +72,7 @@ export default async function ProgressPage() {
               <span
                 key={k}
                 className={cn(
-                  k === 'nailed' && 'bg-chalk',
+                  k === 'nailed' && 'bg-amber',
                   k === 'close' && 'bg-ash',
                   k === 'off' && 'bg-ash-dim',
                 )}
@@ -96,13 +96,13 @@ export default async function ProgressPage() {
                 key={key}
                 className={cn(
                   'rounded-[12px] border p-3',
-                  record ? 'border-rust/50 bg-rust/10' : 'border-hairline bg-slate/50',
+                  record ? 'border-amber/50 bg-amber/10' : 'border-hairline bg-slate/50',
                 )}
               >
                 <p className={cn('text-[13px] font-medium', !record && 'text-ash-dim')}>{label}</p>
                 {record ? (
                   <>
-                    <p className="fig mt-1 text-[20px] leading-none font-bold text-rust-bright">
+                    <p className="fig mt-1 text-[20px] leading-none font-bold text-amber-bright">
                       {formatDuration(record.timeS)}
                     </p>
                     <p className="mt-1 text-[11px] text-ash">

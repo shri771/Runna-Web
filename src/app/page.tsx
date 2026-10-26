@@ -22,7 +22,7 @@ export default function Landing() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/today"
-            className="rounded-full bg-chalk px-6 py-3 text-[15px] font-semibold text-ink transition hover:brightness-110"
+            className="rounded-full bg-amber px-6 py-3 text-[15px] font-semibold text-ink transition hover:brightness-110"
           >
             Build my plan
           </Link>

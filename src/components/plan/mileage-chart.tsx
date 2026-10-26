@@ -39,7 +39,7 @@ export function MileageChart({
               <div
                 className={cn(
                   'w-full rounded-t-[3px] transition-all duration-500',
-                  active ? 'bg-chalk' : w.isTaper ? 'bg-rust/40/60' : 'bg-rust/40',
+                  active ? 'bg-amber' : w.isTaper ? 'bg-amber/20' : 'bg-amber/35',
                 )}
                 style={{ height: `${Math.max(3, (w.targetDistanceM / peak) * 100)}%` }}
               />

@@ -106,7 +106,7 @@ export function PickWorkout({ activityId }: { activityId: string }) {
               disabled={loading}
               className={cn(
                 'flex w-full items-baseline justify-between gap-2 rounded-[7px] px-2 py-1.5 text-left hover:bg-slate-3',
-                c.score >= 0.75 && 'bg-chalk/5',
+                c.score >= 0.75 && 'bg-amber/5',
               )}
             >
               <span className="min-w-0 truncate text-[13px]">{c.name}</span>

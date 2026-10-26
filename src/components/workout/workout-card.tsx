@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, Link2, Loader2, Zap } from 'lucide-react'
+import { BookOpen, Check, Link2, Loader2, Zap } from 'lucide-react'
 import { Silhouette } from '@/components/workout/silhouette'
 import { cn } from '@/lib/cn'
 import type { WorkoutStep, WorkoutType } from '@/lib/plan-engine/types'
@@ -57,9 +57,15 @@ export function WorkoutCard({ workout, dateLabel }: { workout: CardWorkout; date
         <div className="min-w-0 flex-1 p-4">
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
-              <h3 className={cn('text-[18px] leading-tight font-semibold', done && 'text-ash')}>
+              <a
+                href={`/workouts/${workout.id}`}
+                className={cn(
+                  'text-[18px] leading-tight font-semibold hover:underline',
+                  done && 'text-ash',
+                )}
+              >
                 {workout.name}
-              </h3>
+              </a>
               <p className="mt-1 text-[13px] text-ash">
                 {dateLabel} · {formatDurationEstimate(workout.estDurationMinS, workout.estDurationMaxS)}
               </p>
@@ -73,7 +79,7 @@ export function WorkoutCard({ workout, dateLabel }: { workout: CardWorkout; date
               aria-label={done ? `Mark ${workout.name} not done` : `Mark ${workout.name} done`}
               className={cn(
                 'grid size-9 shrink-0 place-items-center rounded-full border transition',
-                done ? 'border-chalk bg-chalk text-ink' : 'border-hairline-strong text-ash hover:text-chalk',
+                done ? 'border-amber bg-amber text-ink' : 'border-hairline-strong text-ash hover:text-chalk',
               )}
             >
               {pending ? <Loader2 size={16} className="animate-spin" /> : done ? <Check size={18} /> : null}
@@ -107,14 +113,22 @@ export function WorkoutCard({ workout, dateLabel }: { workout: CardWorkout; date
             <p className="mt-3 text-[13px] text-ash">Marked done without a run attached.</p>
           )}
 
-          {!done && (
+          <div className="mt-3 flex gap-4">
             <a
-              href="/link"
-              className="mt-3 inline-flex items-center gap-1.5 text-[13px] text-ash hover:text-chalk"
+              href={`/workouts/${workout.id}`}
+              className="inline-flex items-center gap-1.5 text-[13px] text-ash hover:text-chalk"
             >
-              <Link2 size={13} /> Link a run
+              <BookOpen size={13} /> How to run it
             </a>
-          )}
+            {!done && (
+              <a
+                href="/link"
+                className="inline-flex items-center gap-1.5 text-[13px] text-ash hover:text-chalk"
+              >
+                <Link2 size={13} /> Link a run
+              </a>
+            )}
+          </div>
 
           {error && (
             <p role="alert" className="mt-2 text-[13px] text-danger">

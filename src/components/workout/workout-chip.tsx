@@ -24,7 +24,7 @@ export function WorkoutChip({ workout, className }: { workout: ChipWorkout; clas
 
   return (
     <Link
-      href={`/today?date=${workout.date}`}
+      href={`/workouts/${workout.id}`}
       className={cn(
         'group flex min-w-0 overflow-hidden rounded-[9px] border border-hairline bg-slate-2 transition hover:border-hairline-strong',
         skipped && 'opacity-45',

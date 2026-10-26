@@ -31,7 +31,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${condensed.variable}`}>
+    // Extensions such as Dark Reader mutate <html> before React hydrates,
+    // which React reports as a mismatch it cannot patch. Nothing server-side
+    // differs, so the warning is suppressed on this element only.
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${condensed.variable}`}
+    >
       <body className="min-h-dvh bg-ink font-[family-name:var(--font-sans)] text-chalk antialiased">
         {children}
       </body>

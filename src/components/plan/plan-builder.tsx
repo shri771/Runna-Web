@@ -233,7 +233,7 @@ export function PlanBuilder() {
         </div>
         <div className="mt-2 flex gap-1" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={STEPS.length}>
           {STEPS.map((s, i) => (
-            <span key={s} className={cn('h-1 flex-1 rounded-full', i <= step ? 'bg-chalk' : 'bg-slate-3')} />
+            <span key={s} className={cn('h-1 flex-1 rounded-full', i <= step ? 'bg-amber' : 'bg-slate-3')} />
           ))}
         </div>
       </header>
@@ -391,7 +391,7 @@ function StepWeek({ draft, set }: StepProps) {
                 onClick={() => toggleDay(i)}
                 className={cn(
                   'flex-1 rounded-[10px] border py-2.5 text-[14px] font-semibold transition',
-                  on ? 'border-chalk bg-chalk/10' : 'border-hairline bg-slate-2 text-ash hover:text-chalk',
+                  on ? 'border-amber bg-amber/10' : 'border-hairline bg-slate-2 text-ash hover:text-chalk',
                 )}
               >
                 {d}

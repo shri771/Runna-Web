@@ -49,7 +49,7 @@ export default async function CalendarPage() {
               key={week.id}
               className={cn(
                 'rounded-[14px] border',
-                isCurrent ? 'border-chalk/35 bg-slate' : 'border-hairline bg-slate/60',
+                isCurrent ? 'border-amber/35 bg-slate' : 'border-hairline bg-slate/60',
               )}
               aria-current={isCurrent ? 'date' : undefined}
             >

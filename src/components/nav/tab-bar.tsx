@@ -50,7 +50,7 @@ export function TabBar({ reviewCount = 0 }: { reviewCount?: number }) {
               <Icon size={22} strokeWidth={active ? 2.4 : 1.8} aria-hidden />
               {href === '/link' && reviewCount > 0 && (
                 <span
-                  className="absolute -top-1 -right-2 min-w-[16px] rounded-full bg-chalk px-1 text-[10px] font-bold text-ink"
+                  className="absolute -top-1 -right-2 min-w-[16px] rounded-full bg-amber px-1 text-[10px] font-bold text-ink"
                   aria-label={`${reviewCount} to review`}
                 >
                   {reviewCount}

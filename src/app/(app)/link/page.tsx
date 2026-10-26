@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Check } from 'lucide-react'
 import { AppHeader } from '@/components/nav/app-header'
 import { ActivityLine, SuggestionCard, type LinkableActivity } from '@/components/workout/link-row'
+import { ManualRunForm } from '@/components/workout/manual-run-form'
 import { PickWorkout } from '@/components/workout/pick-workout'
 import { auth } from '@/lib/auth'
 import { getLinkInbox } from '@/lib/services/link-service'
@@ -17,43 +18,42 @@ export default async function LinkPage() {
   const today = new Date().toISOString().slice(0, 10)
   const { connection, needsReview, unlinked, waiting } = await getLinkInbox(session.user.id, today)
 
-  const allClear = needsReview.length === 0 && unlinked.length === 0 && waiting.length === 0
+  const outstanding = needsReview.length + unlinked.length + waiting.length
+  const allClear = outstanding === 0
+  // "Everything matched" is only true if there was something to match. With no
+  // runs at all the honest state is "nothing here yet".
+  const hasAnyRuns = needsReview.length + unlinked.length > 0
 
   return (
     <>
       <AppHeader
         title="Link runs"
-        subtitle={allClear ? 'Everything matched' : `${needsReview.length + unlinked.length + waiting.length} to sort out`}
+        subtitle={allClear ? (hasAnyRuns ? 'Everything matched' : undefined) : `${outstanding} to sort out`}
         user={{ name: session.user.name ?? null, image: session.user.image ?? null }}
       />
 
       {!connection && (
         <section className="rounded-[14px] border border-hairline bg-slate p-5">
-          <h2 className="text-[17px] font-semibold">Connect Strava to bring your runs in</h2>
+          <h2 className="text-[17px] font-semibold">Add your runs</h2>
           <p className="mt-1 text-[14px] text-ash">
-            We read your runs so each one can be matched to the session it was meant to be. We never
-            post anything.
+            Log a run here and we will offer it against the session it was meant to be, matched on
+            date, distance and time.
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href="/settings"
-              className="rounded-full bg-chalk px-5 py-2.5 text-[15px] font-semibold text-ink"
-            >
-              Connect Strava
-            </Link>
-            <Link
-              href="/link#manual"
-              className="rounded-full border border-hairline-strong px-5 py-2.5 text-[15px] font-semibold"
-            >
-              Log a run by hand
-            </Link>
+
+          <div className="mt-4">
+            <ManualRunForm defaultDate={today} />
           </div>
+
+          <p className="mt-4 border-t border-hairline pt-4 text-[13px] text-ash-dim">
+            Importing automatically from Strava is designed but not built yet — see
+            docs/05-strava-integration.md. Until it is, runs are logged by hand.
+          </p>
         </section>
       )}
 
-      {allClear && connection && (
+      {allClear && hasAnyRuns && (
         <section className="rounded-[14px] border border-hairline bg-slate p-8 text-center">
-          <span className="mx-auto grid size-12 place-items-center rounded-full border border-chalk/30 bg-chalk/10">
+          <span className="mx-auto grid size-12 place-items-center rounded-full border border-amber/30 bg-amber/10">
             <Check size={22} />
           </span>
           <h2 className="mt-4 text-[17px] font-semibold">Everything is linked</h2>
@@ -82,6 +82,12 @@ export default async function LinkPage() {
             ))}
           </div>
         </section>
+      )}
+
+      {connection && (
+        <div className="mt-5">
+          <ManualRunForm defaultDate={today} />
+        </div>
       )}
 
       {unlinked.length > 0 && (

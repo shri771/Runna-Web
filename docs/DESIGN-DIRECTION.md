@@ -22,19 +22,41 @@ insights tells the reader nothing. Uppercase survives in exactly one place:
 unit labels under a figure (`KILOMETERS`, `TIME`), which is race-results and
 timing-display convention.
 
+## Second pass: amber
+
+The client asked for a yellow-toned palette. The obvious move — keep the cold
+near-black and drop in an acid yellow — would have landed on exactly the
+generic shape the first pass was rejected for, just in a different hue.
+
+So the **ground moved warm** instead. Running happens at 6am under sodium
+street lamps, and that light is amber; a warm near-black is what wet asphalt
+actually looks like at that hour. On a warm ground amber is a native
+inhabitant rather than an accent bolted onto a cold scheme.
+
+That forced one real restructure. Yellow was already in the effort spectrum as
+*tempo*, so making it the brand colour would have recreated the exact ambiguity
+the first pass removed from green. The resolution: **amber means the goal** —
+primary actions, race day, personal records, and nothing else. The effort
+spectrum keeps green-to-red and now contains no yellow at all, with tempo
+shifted to orange.
+
+Yellow being what you are working toward, and never what you are doing right
+now, is a rule the whole interface can hold.
+
 ## Colour
 
 | Token | Hex | Reasoning |
 |---|---|---|
-| `--ink` | `#0F141B` | Ground. Cold and faintly blue rather than neutral black — running happens before sunrise, and the app is most often opened at 6am. |
-| `--slate` | `#19202A` | Card surface. |
-| `--slate-2` | `#232C38` | Nested surface, input, chip. |
-| `--chalk` | `#F4F6F8` | Text, and the **primary action**. Lane markings are chalk on track. The reference screenshot already makes its main button a white pill, so this is in the brief. |
-| `--rust` | `#B8472A` | Single warm accent: race day, records, the one thing on screen that matters most. A 400m track surface is genuinely this colour — it is subject matter, not a terracotta default. |
-| `--ash` | `#8A95A3` | Secondary text. |
+| `--ink` | `#14110A` | Ground. Warm near-black — wet asphalt under a sodium street lamp. |
+| `--slate` | `#1E1910` | Card surface. |
+| `--slate-2` | `#292218` | Nested surface, input, chip. |
+| `--chalk` | `#F7F2E4` | Text. Warm white — chalk and paper, not screen white. |
+| `--amber` | `#F2C230` | The goal: primary actions, race day, records. Never used for effort. |
+| `--ash` | `#A69A80` | Secondary text, warm grey. |
 
-The nine workout-type colours are unchanged. They are a functional
-green-to-red effort spectrum and the user scans by them.
+The nine workout-type colours are a functional green-to-red effort spectrum
+and the user scans by them. Tempo moved from yellow to orange so the spectrum
+contains no yellow, leaving amber free to mean only "the goal".
 
 ## Type
 

@@ -1,12 +1,13 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
-import { eq } from 'drizzle-orm'
+import { and, count, eq } from 'drizzle-orm'
 import { AppHeader } from '@/components/nav/app-header'
 import { SignOutButton } from '@/components/auth/sign-out-button'
+import { DeletePlan } from '@/components/plan/delete-plan'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { athleteProfiles, stravaConnections } from '@/lib/db/schema'
+import { athleteProfiles, planVersions, planWeeks, plans, stravaConnections, workouts } from '@/lib/db/schema'
 import { derivePaceZones, formatPaceRange, type Ability, type PaceBasis } from '@/lib/plan-engine'
 
 export const dynamic = 'force-dynamic'
@@ -32,6 +33,14 @@ export default async function SettingsPage() {
     .from(stravaConnections)
     .where(eq(stravaConnections.userId, session.user.id))
     .limit(1)
+
+  const [sessionCount] = await db
+    .select({ n: count() })
+    .from(workouts)
+    .innerJoin(planWeeks, eq(planWeeks.id, workouts.planWeekId))
+    .innerJoin(planVersions, eq(planVersions.id, planWeeks.planVersionId))
+    .innerJoin(plans, and(eq(plans.id, planVersions.planId), eq(plans.currentVersionId, planVersions.id)))
+    .where(and(eq(plans.userId, session.user.id), eq(plans.status, 'ACTIVE')))
 
   const basis: PaceBasis | undefined =
     profile?.paceBasisKind === 'RACE_RESULT' && profile.paceBasisDistanceM && profile.paceBasisTimeS
@@ -93,10 +102,11 @@ export default async function SettingsPage() {
         ) : (
           <>
             <p className="mt-1 text-[14px] text-ash">
-              Not connected. You can still log runs by hand and link them to your sessions.
+              Automatic importing is designed but not built yet. Log runs by hand on the Link tab
+              and they work exactly the same way once attached to a session.
             </p>
             <Link href="/link" className="mt-3 inline-block text-[14px] font-medium underline">
-              Go to Link runs
+              Log a run
             </Link>
           </>
         )}
@@ -112,6 +122,7 @@ export default async function SettingsPage() {
           <ChevronRight size={16} className="text-ash" />
         </Link>
         <SignOutButton />
+        <DeletePlan workoutCount={sessionCount?.n ?? 0} />
       </nav>
 
       <p className="py-6 text-center text-[12px] text-ash-dim">
