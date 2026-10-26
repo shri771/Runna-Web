@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { AlertTriangle, ArrowLeft, Check, Loader2 } from 'lucide-react'
 import { MileageChart, type ChartWeek } from '@/components/plan/mileage-chart'
 import { Button, Card, Field, Input, OptionCard, Segmented, Slider } from '@/components/ui/controls'
@@ -111,7 +112,10 @@ export function PlanBuilder() {
   const [issues, setIssues] = useState<PlanIssue[]>([])
   const [loading, setLoading] = useState(false)
   const [previewError, setPreviewError] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const router = useRouter()
 
   const set = useCallback(<K extends keyof Draft>(key: K, value: Draft[K]) => {
     setDraft((d) => ({ ...d, [key]: value }))
@@ -179,22 +183,57 @@ export function PlanBuilder() {
 
   const applyPatch = (patch: Record<string, unknown>) => setDraft((d) => ({ ...d, ...patch }))
 
+  async function createPlan(archiveFirst = false) {
+    if (creating) return // a double click must never write two plans
+    setCreating(true)
+    setCreateError(null)
+    try {
+      const res = await fetch('/api/plans', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ...toRequest(draft), archiveFirst }),
+      })
+      const body = await res.json().catch(() => null)
+
+      if (res.status === 409 && body?.error?.code === 'PLAN_ALREADY_ACTIVE') {
+        setCreateError('REPLACE')
+        return
+      }
+      if (!res.ok) {
+        setCreateError(body?.error?.message ?? 'Could not create your plan.')
+        return
+      }
+
+      try {
+        localStorage.removeItem(DRAFT_KEY)
+      } catch {
+        /* non-fatal */
+      }
+      router.push('/today?created=1')
+      router.refresh()
+    } catch {
+      setCreateError('Could not reach the server. Your answers are saved — try again.')
+    } finally {
+      setCreating(false)
+    }
+  }
+
   return (
     <div className="mx-auto w-full max-w-[1000px] px-4 py-6 lg:px-8">
       <header className="mb-6">
         <div className="flex items-center gap-3">
           {step > 0 && (
-            <button onClick={() => setStep((s) => s - 1)} aria-label="Back" className="text-muted hover:text-text">
+            <button onClick={() => setStep((s) => s - 1)} aria-label="Back" className="text-ash hover:text-chalk">
               <ArrowLeft size={20} />
             </button>
           )}
-          <p className="label">
+          <p className="unit">
             Step {step + 1} of {STEPS.length} · {STEPS[step]}
           </p>
         </div>
         <div className="mt-2 flex gap-1" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={STEPS.length}>
           {STEPS.map((s, i) => (
-            <span key={s} className={cn('h-1 flex-1 rounded-full', i <= step ? 'bg-brand' : 'bg-surface-3')} />
+            <span key={s} className={cn('h-1 flex-1 rounded-full', i <= step ? 'bg-chalk' : 'bg-slate-3')} />
           ))}
         </div>
       </header>
@@ -221,15 +260,38 @@ export function PlanBuilder() {
         </aside>
       </div>
 
+      {createError === 'REPLACE' ? (
+        <div className="mt-6 rounded-[14px] border border-caution/40 bg-caution/10 p-4">
+          <p className="text-[14px]">You already have an active plan.</p>
+          <p className="mt-0.5 text-[13px] text-ash">
+            Replacing it archives the old one. Your completed runs stay in your history.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <Button variant="secondary" onClick={() => router.push('/plan')}>
+              Open my plan
+            </Button>
+            <Button onClick={() => createPlan(true)} disabled={creating}>
+              Replace it
+            </Button>
+          </div>
+        </div>
+      ) : (
+        createError && (
+          <p role="alert" className="mt-6 rounded-[14px] border border-danger/40 bg-danger/10 p-4 text-[13px] text-danger">
+            {createError}
+          </p>
+        )
+      )}
+
       <div className="mt-6 flex items-center justify-between gap-3">
         <Button variant="ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
           Back
         </Button>
 
         {isLast ? (
-          <Button disabled={blocked || loading || !summary}>
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-            Create my plan
+          <Button onClick={() => createPlan()} disabled={blocked || loading || creating || !summary}>
+            {loading || creating ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+            {creating ? 'Building your plan' : 'Create my plan'}
           </Button>
         ) : (
           <Button onClick={() => setStep((s) => s + 1)}>Next</Button>
@@ -289,7 +351,7 @@ function StepWhen({ draft, set }: StepProps) {
           </Field>
         </>
       )}
-      <p className="text-[13px] text-muted">Your plan starts Monday {nextMonday()}.</p>
+      <p className="text-[13px] text-ash">Your plan starts Monday {nextMonday()}.</p>
     </section>
   )
 }
@@ -329,7 +391,7 @@ function StepWeek({ draft, set }: StepProps) {
                 onClick={() => toggleDay(i)}
                 className={cn(
                   'flex-1 rounded-[10px] border py-2.5 text-[14px] font-semibold transition',
-                  on ? 'border-brand bg-brand/10' : 'border-border bg-surface-2 text-muted hover:text-text',
+                  on ? 'border-chalk bg-chalk/10' : 'border-hairline bg-slate-2 text-ash hover:text-chalk',
                 )}
               >
                 {d}
@@ -343,7 +405,7 @@ function StepWeek({ draft, set }: StepProps) {
         <select
           value={draft.longRunDay}
           onChange={(e) => set('longRunDay', Number(e.target.value))}
-          className="w-full rounded-[10px] border border-border bg-surface-2 px-3 py-2.5 text-[15px]"
+          className="w-full rounded-[10px] border border-hairline bg-slate-2 px-3 py-2.5 text-[15px]"
         >
           {draft.preferredDays.map((d) => (
             <option key={d} value={d}>
@@ -407,7 +469,7 @@ function StepPace({ draft, set, zones }: StepProps & { zones: PaceZones | null }
   return (
     <section className="space-y-5">
       <h2 className="text-[22px] font-semibold tracking-tight">How fast do you run?</h2>
-      <p className="text-[14px] text-muted">
+      <p className="text-[14px] text-ash">
         This sets the pace target on every interval. A recent race is most accurate.
       </p>
 
@@ -428,7 +490,7 @@ function StepPace({ draft, set, zones }: StepProps & { zones: PaceZones | null }
             <select
               value={draft.raceResultDistanceM}
               onChange={(e) => set('raceResultDistanceM', Number(e.target.value))}
-              className="w-full rounded-[10px] border border-border bg-surface-2 px-3 py-2.5 text-[15px]"
+              className="w-full rounded-[10px] border border-hairline bg-slate-2 px-3 py-2.5 text-[15px]"
             >
               <option value={5000}>5K</option>
               <option value={10000}>10K</option>
@@ -449,18 +511,18 @@ function StepPace({ draft, set, zones }: StepProps & { zones: PaceZones | null }
       )}
 
       {draft.paceKind === 'NONE' && (
-        <p className="rounded-[12px] border border-border bg-surface-2 p-3 text-[13px] text-muted">
+        <p className="rounded-[12px] border border-hairline bg-slate-2 p-3 text-[13px] text-ash">
           We will estimate from your ability level and you can refine it later.
         </p>
       )}
 
       {zones && (
-        <div className="rounded-[12px] border border-border bg-surface-2 p-4">
-          <p className="label">Your training paces</p>
+        <div className="rounded-[12px] border border-hairline bg-slate-2 p-4">
+          <p className="unit">Your training paces</p>
           <dl className="mt-2 space-y-1.5">
             {(['EASY', 'LONG', 'THRESHOLD', 'INTERVAL'] as const).map((z) => (
               <div key={z} className="flex justify-between text-[14px]">
-                <dt className="text-muted capitalize">{z.toLowerCase()}</dt>
+                <dt className="text-ash capitalize">{z.toLowerCase()}</dt>
                 <dd className="tabular font-medium">{formatPaceRange(zones[z])}</dd>
               </div>
             ))}
@@ -499,7 +561,7 @@ function StepVolume({ draft, set }: StepProps) {
         />
       </Field>
 
-      <p className="text-[13px] text-muted">
+      <p className="text-[13px] text-ash">
         Your target is a ceiling, not a destination. When the plan reaches it, the weeks that follow
         get harder rather than longer.
       </p>
@@ -527,8 +589,8 @@ function Preview({
   return (
     <Card>
       <div className="flex items-center justify-between">
-        <p className="label">Your plan</p>
-        {loading && <Loader2 size={14} className="animate-spin text-muted" aria-label="Updating" />}
+        <p className="unit">Your plan</p>
+        {loading && <Loader2 size={14} className="animate-spin text-ash" aria-label="Updating" />}
       </div>
 
       {error && (
@@ -541,20 +603,20 @@ function Preview({
         <div className={cn('mt-3 transition-opacity', loading && 'opacity-40')}>
           <MileageChart weeks={summary.weeks} />
           <dl className="mt-4 grid grid-cols-2 gap-y-2 text-[14px]">
-            <dt className="text-muted">Weeks</dt>
+            <dt className="text-ash">Weeks</dt>
             <dd className="tabular text-right font-semibold">{summary.totalWeeks}</dd>
-            <dt className="text-muted">Workouts</dt>
+            <dt className="text-ash">Workouts</dt>
             <dd className="tabular text-right font-semibold">{summary.workoutCount}</dd>
-            <dt className="text-muted">Peak week</dt>
+            <dt className="text-ash">Peak week</dt>
             <dd className="tabular text-right font-semibold">{formatDistance(summary.peakWeeklyM)}</dd>
-            <dt className="text-muted">Longest run</dt>
+            <dt className="text-ash">Longest run</dt>
             <dd className="tabular text-right font-semibold">{formatDistance(summary.longestRunM)}</dd>
-            <dt className="text-muted">Total</dt>
+            <dt className="text-ash">Total</dt>
             <dd className="tabular text-right font-semibold">{formatDistance(summary.totalDistanceM, 'KM', 0)}</dd>
           </dl>
         </div>
       ) : (
-        !error && <p className="mt-3 text-[13px] text-muted">Answer the questions to see your plan take shape.</p>
+        !error && <p className="mt-3 text-[13px] text-ash">Answer the questions to see your plan take shape.</p>
       )}
 
       {[...errors, ...warnings].map((issue) => (
@@ -562,11 +624,11 @@ function Preview({
           key={issue.code + issue.message}
           className={cn(
             'mt-3 rounded-[12px] border p-3',
-            issue.severity === 'error' ? 'border-danger/40 bg-danger/10' : 'border-warning/40 bg-warning/10',
+            issue.severity === 'error' ? 'border-danger/40 bg-danger/10' : 'border-caution/40 bg-caution/10',
           )}
         >
           <p className="flex gap-2 text-[13px]">
-            <AlertTriangle size={15} className={issue.severity === 'error' ? 'shrink-0 text-danger' : 'shrink-0 text-warning'} />
+            <AlertTriangle size={15} className={issue.severity === 'error' ? 'shrink-0 text-danger' : 'shrink-0 text-caution'} />
             {issue.message}
           </p>
           {issue.suggestions && issue.suggestions.length > 0 && (
@@ -576,7 +638,7 @@ function Preview({
                   key={s.label}
                   type="button"
                   onClick={() => onApply(s.patch as Record<string, unknown>)}
-                  className="rounded-full border border-border-strong px-3 py-1 text-[12px] font-medium hover:bg-surface-2"
+                  className="rounded-full border border-hairline-strong px-3 py-1 text-[12px] font-medium hover:bg-slate-2"
                 >
                   {s.label}
                 </button>

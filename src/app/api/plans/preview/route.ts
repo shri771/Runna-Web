@@ -1,5 +1,7 @@
-import { generatePlan, type PlanRequest } from '@/lib/plan-engine'
+import { requireUserId } from '@/lib/auth'
 import { AppError, route } from '@/lib/errors'
+import { generatePlan, type PlanRequest } from '@/lib/plan-engine'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { planRequestSchema } from '@/lib/validation/plan'
 
 export const runtime = 'nodejs'
@@ -13,6 +15,11 @@ export const runtime = 'nodejs'
  * a state of the form, not an HTTP failure.
  */
 export const POST = route(async (req: Request) => {
+  // The middleware matcher deliberately skips /api, so this route has to do
+  // its own gate. It runs the whole engine, so it is metered as well.
+  const userId = await requireUserId()
+  await checkRateLimit(`preview:${userId}`, 120, 60)
+
   const parsed = planRequestSchema.safeParse(await req.json().catch(() => null))
   if (!parsed.success) {
     const first = parsed.error.issues[0]
