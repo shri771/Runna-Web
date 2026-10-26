@@ -18,7 +18,7 @@ artifacts are reachable even if the lower items get cut.
 ## P0 — submission artifacts (pass/fail)
 - [ ] 11. Neon database connected  *(needs Shrikant)*
 - [ ] 12. Deployed to Vercel  *(needs Shrikant)*
-- [ ] 13. README to the brief's required structure
+- [x] 13. README to the brief's required structure
 - [ ] 14. Demo video, 3-5 min  *(needs Shrikant)*
 - [ ] 15. Submission form  *(needs Shrikant)*
 
