@@ -39,13 +39,13 @@ export function MileageChart({
               <div
                 className={cn(
                   'w-full rounded-t-[3px] transition-all duration-500',
-                  active ? 'bg-brand' : w.isTaper ? 'bg-brand-dim/60' : 'bg-brand-dim',
+                  active ? 'bg-chalk' : w.isTaper ? 'bg-rust/40/60' : 'bg-rust/40',
                 )}
                 style={{ height: `${Math.max(3, (w.targetDistanceM / peak) * 100)}%` }}
               />
               <span
                 role="tooltip"
-                className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-md border border-border bg-surface-2 px-2 py-1 text-[11px] whitespace-nowrap group-hover:block"
+                className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-md border border-hairline bg-slate-2 px-2 py-1 text-[11px] whitespace-nowrap group-hover:block"
               >
                 Week {w.weekNo} · {formatDistance(w.targetDistanceM, units)}
                 {w.isCutback && ' · cutback'}
@@ -62,7 +62,7 @@ export function MileageChart({
             key={w.weekNo}
             className={cn(
               'flex-1 text-center text-[10px] tabular',
-              w.weekNo === currentWeek ? 'font-bold text-text' : 'text-subtle',
+              w.weekNo === currentWeek ? 'font-bold text-chalk' : 'text-ash-dim',
             )}
           >
             {weeks.length > 16 && w.weekNo % 2 === 0 ? '' : w.weekNo}

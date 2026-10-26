@@ -89,7 +89,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       <h1 className="text-[22px] font-semibold tracking-tight">
         {isSignUp ? 'Create your account' : 'Welcome back'}
       </h1>
-      <p className="mt-1 text-[14px] text-muted">
+      <p className="mt-1 text-[14px] text-ash">
         {isSignUp ? 'Then we will build your plan.' : 'Sign in to pick up your plan.'}
       </p>
 
@@ -126,9 +126,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </Button>
       </form>
 
-      <p className="mt-5 text-center text-[14px] text-muted">
+      <p className="mt-5 text-center text-[14px] text-ash">
         {isSignUp ? 'Already have an account? ' : 'New here? '}
-        <Link href={isSignUp ? '/sign-in' : '/sign-up'} className="font-medium text-text hover:underline">
+        <Link href={isSignUp ? '/sign-in' : '/sign-up'} className="font-medium text-chalk hover:underline">
           {isSignUp ? 'Sign in' : 'Create one'}
         </Link>
       </p>

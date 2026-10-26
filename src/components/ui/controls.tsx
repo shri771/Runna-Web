@@ -3,7 +3,7 @@
 import { cn } from '@/lib/cn'
 
 export function Card({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('rounded-[16px] border border-border bg-surface p-5', className)} {...props} />
+  return <div className={cn('rounded-[16px] border border-hairline bg-slate p-5', className)} {...props} />
 }
 
 export function Button({
@@ -16,9 +16,9 @@ export function Button({
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[15px] font-semibold transition',
         'disabled:cursor-not-allowed disabled:opacity-40',
-        variant === 'primary' && 'bg-brand text-bg hover:brightness-110',
-        variant === 'secondary' && 'border border-border-strong text-text hover:bg-surface-2',
-        variant === 'ghost' && 'text-muted hover:text-text',
+        variant === 'primary' && 'bg-chalk text-ink hover:brightness-110',
+        variant === 'secondary' && 'border border-hairline-strong text-chalk hover:bg-slate-2',
+        variant === 'ghost' && 'text-ash hover:text-chalk',
         className,
       )}
       {...props}
@@ -41,14 +41,14 @@ export function OptionCard({
       className={cn(
         'rounded-[12px] border p-4 text-left transition',
         selected
-          ? 'border-brand bg-brand/10 text-text'
-          : 'border-border bg-surface-2 text-muted hover:border-border-strong hover:text-text',
+          ? 'border-chalk bg-chalk/10 text-chalk'
+          : 'border-hairline bg-slate-2 text-ash hover:border-hairline-strong hover:text-chalk',
         className,
       )}
       {...props}
     >
-      <span className="block text-[15px] font-semibold text-text">{title}</span>
-      {hint && <span className="mt-0.5 block text-[13px] text-muted">{hint}</span>}
+      <span className="block text-[15px] font-semibold text-chalk">{title}</span>
+      {hint && <span className="mt-0.5 block text-[13px] text-ash">{hint}</span>}
     </button>
   )
 }
@@ -75,12 +75,12 @@ export function Segmented<T extends string | number>({
           className={cn(
             'flex-1 rounded-[10px] border px-2 py-2 text-center transition',
             o.value === value
-              ? 'border-brand bg-brand/10'
-              : 'border-border bg-surface-2 hover:border-border-strong',
+              ? 'border-chalk bg-chalk/10'
+              : 'border-hairline bg-slate-2 hover:border-hairline-strong',
           )}
         >
           <span className="block text-[14px] font-semibold">{o.label}</span>
-          {o.hint && <span className="block text-[11px] text-muted">{o.hint}</span>}
+          {o.hint && <span className="block text-[11px] text-ash">{o.hint}</span>}
         </button>
       ))}
     </div>
@@ -114,7 +114,7 @@ export function Slider({
         </label>
         <span className="tabular text-[17px] font-semibold">
           {value}
-          <span className="ml-0.5 text-[13px] text-muted">{suffix}</span>
+          <span className="ml-0.5 text-[13px] text-ash">{suffix}</span>
         </span>
       </div>
       <input
@@ -125,14 +125,14 @@ export function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-2 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-surface-3 accent-[var(--color-brand)]"
+        className="mt-2 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-slate-3 accent-[var(--color-brand)]"
       />
-      <div className="mt-1 flex justify-between text-[11px] text-subtle tabular">
+      <div className="mt-1 flex justify-between text-[11px] text-ash-dim tabular">
         <span>
           {min}
           {suffix}
         </span>
-        {footnote && <span className="text-muted">{footnote}</span>}
+        {footnote && <span className="text-ash">{footnote}</span>}
         <span>
           {max}
           {suffix}
@@ -156,7 +156,7 @@ export function Field({
   return (
     <div>
       <label className="block text-[14px] font-medium">{label}</label>
-      {hint && <p className="mt-0.5 text-[13px] text-muted">{hint}</p>}
+      {hint && <p className="mt-0.5 text-[13px] text-ash">{hint}</p>}
       <div className="mt-2">{children}</div>
       {error && (
         <p role="alert" className="mt-1.5 text-[13px] text-danger">
@@ -171,8 +171,8 @@ export function Input({ className, ...props }: React.ComponentProps<'input'>) {
   return (
     <input
       className={cn(
-        'w-full rounded-[10px] border border-border bg-surface-2 px-3 py-2.5 text-[15px]',
-        'placeholder:text-subtle focus:border-border-strong focus:outline-none',
+        'w-full rounded-[10px] border border-hairline bg-slate-2 px-3 py-2.5 text-[15px]',
+        'placeholder:text-ash-dim focus:border-hairline-strong focus:outline-none',
         className,
       )}
       {...props}

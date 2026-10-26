@@ -24,7 +24,7 @@ export function TabBar({ reviewCount = 0 }: { reviewCount?: number }) {
     <nav
       aria-label="Main"
       className={cn(
-        'fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-bg/95 backdrop-blur',
+        'fixed inset-x-0 bottom-0 z-40 flex border-t border-hairline bg-ink/95 backdrop-blur',
         'pb-[env(safe-area-inset-bottom)]',
         'lg:inset-y-0 lg:right-auto lg:left-0 lg:w-60 lg:flex-col lg:border-t-0 lg:border-r lg:pt-6',
       )}
@@ -43,14 +43,14 @@ export function TabBar({ reviewCount = 0 }: { reviewCount?: number }) {
             className={cn(
               'relative flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium',
               'lg:w-full lg:flex-none lg:flex-row lg:justify-start lg:gap-3 lg:px-5 lg:py-3 lg:text-sm',
-              active ? 'text-text' : 'text-muted hover:text-text',
+              active ? 'text-chalk' : 'text-ash hover:text-chalk',
             )}
           >
             <span className="relative">
               <Icon size={22} strokeWidth={active ? 2.4 : 1.8} aria-hidden />
               {href === '/link' && reviewCount > 0 && (
                 <span
-                  className="absolute -top-1 -right-2 min-w-[16px] rounded-full bg-brand px-1 text-[10px] font-bold text-bg"
+                  className="absolute -top-1 -right-2 min-w-[16px] rounded-full bg-chalk px-1 text-[10px] font-bold text-ink"
                   aria-label={`${reviewCount} to review`}
                 >
                   {reviewCount}
