@@ -9,11 +9,11 @@ artifacts are reachable even if the lower items get cut.
 - [x] 3. Fix: `/api/plans/preview` is publicly callable, no session or rate limit
 - [x] 4. Seed script — so screens have data to render before Strava exists
 - [x] 5. Today screen on real data
-- [ ] 6. Plan screen on real data
-- [ ] 7. Calendar screen on real data
-- [ ] 8. Link screen — manual activity entry + linking (no OAuth needed)
-- [ ] 9. Progress screen on real data
-- [ ] 10. Session in header + sign out
+- [x] 6. Plan screen on real data
+- [x] 7. Calendar screen on real data
+- [x] 8. Link screen — manual activity entry + linking (no OAuth needed)
+- [x] 9. Progress screen on real data
+- [x] 10. Session in header + sign out
 
 ## P0 — submission artifacts (pass/fail)
 - [ ] 11. Neon database connected  *(needs Shrikant)*
