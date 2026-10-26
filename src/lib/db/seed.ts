@@ -9,7 +9,7 @@
  *   npm run db:seed
  */
 
-import { hash } from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 import { db } from './index'
 import {
@@ -69,7 +69,7 @@ async function main() {
     .values({
       email: DEMO_EMAIL,
       name: 'Demo Runner',
-      passwordHash: await hash(DEMO_PASSWORD, 12),
+      passwordHash: await bcrypt.hash(DEMO_PASSWORD, 12),
       timezone: 'Asia/Kolkata',
     })
     .returning({ id: users.id })

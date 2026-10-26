@@ -1,4 +1,4 @@
-import { compare } from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
@@ -26,7 +26,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Same failure for "no such user" and "wrong password", and the hash
         // comparison still runs, so timing does not reveal which it was.
         const hash = user?.passwordHash ?? '$2a$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidinv'
-        const ok = await compare(parsed.data.password, hash)
+        const ok = await bcrypt.compare(parsed.data.password, hash)
         if (!user || !ok) return null
 
         return { id: user.id, email: user.email, name: user.name, image: user.avatarUrl }

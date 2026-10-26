@@ -1,4 +1,4 @@
-import { hash } from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { athleteProfiles, users } from '@/lib/db/schema'
@@ -25,7 +25,7 @@ export const POST = route(async (req: Request) => {
 
   const [created] = await db
     .insert(users)
-    .values({ email, name, timezone, passwordHash: await hash(password, 12) })
+    .values({ email, name, timezone, passwordHash: await bcrypt.hash(password, 12) })
     .returning({ id: users.id })
 
   if (created) await db.insert(athleteProfiles).values({ userId: created.id })
