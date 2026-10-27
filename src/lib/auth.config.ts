@@ -9,6 +9,9 @@ import type { NextAuthConfig } from 'next-auth'
  * through.
  */
 export const authConfig = {
+  // Behind a proxy the Host header is the deployment's, not AUTH_URL's.
+  // Without this every request is rejected as an untrusted host.
+  trustHost: true,
   pages: { signIn: '/sign-in', newUser: '/onboarding' },
   session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
   providers: [], // added in auth.ts
