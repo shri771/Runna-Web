@@ -1,12 +1,13 @@
 import { Suspense } from 'react'
 import { AuthForm } from '@/components/auth/auth-form'
+import { isGoogleEnabled } from '@/lib/auth'
 
 export const metadata = { title: 'Create an account — Runna Web' }
 
 export default function SignUpPage() {
   return (
     <Suspense>
-      <AuthForm mode="sign-up" />
+      <AuthForm mode="sign-up" googleEnabled={isGoogleEnabled()} />
     </Suspense>
   )
 }

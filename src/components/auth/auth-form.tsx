@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
+import { GoogleButton } from '@/components/auth/google-button'
 import { Button, Card, Field, Input } from '@/components/ui/controls'
 import { registerSchema } from '@/lib/validation/plan'
 
@@ -19,7 +20,7 @@ const tz = () => {
   }
 }
 
-export function AuthForm({ mode }: { mode: Mode }) {
+export function AuthForm({ mode, googleEnabled }: { mode: Mode; googleEnabled: boolean }) {
   const router = useRouter()
   const params = useSearchParams()
   const next = params.get('next') ?? '/today'
@@ -93,7 +94,20 @@ export function AuthForm({ mode }: { mode: Mode }) {
         {isSignUp ? 'Then we will build your plan.' : 'Sign in to pick up your plan.'}
       </p>
 
-      <form onSubmit={onSubmit} className="mt-6 space-y-4" noValidate>
+      {googleEnabled && (
+        <>
+          <div className="mt-6">
+            <GoogleButton next={isSignUp ? '/onboarding' : next} />
+          </div>
+          <div className="my-5 flex items-center gap-3">
+            <span className="h-px flex-1 bg-hairline" />
+            <span className="text-[12px] text-ash-dim">or</span>
+            <span className="h-px flex-1 bg-hairline" />
+          </div>
+        </>
+      )}
+
+      <form onSubmit={onSubmit} className={googleEnabled ? 'space-y-4' : 'mt-6 space-y-4'} noValidate>
         {isSignUp && (
           <Field label="Name" error={fieldErrors.name}>
             <Input name="name" autoComplete="name" required aria-invalid={!!fieldErrors.name} />

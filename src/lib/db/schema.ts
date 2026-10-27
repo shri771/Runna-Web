@@ -73,7 +73,7 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash'),
   name: text('name'),
-  avatarUrl: text('avatar_url'),
+  image: text('avatar_url'),
   units: unitsEnum('units').notNull().default('KM'),
   timezone: text('timezone').notNull().default('UTC'),
   weekStartsOn: smallint('week_starts_on').notNull().default(0), // 0 = Monday

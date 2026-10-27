@@ -17,7 +17,8 @@ export const authConfig = {
   providers: [], // added in auth.ts
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.sub = user.id
+      // Set on first sign-in only; afterwards the token already carries it.
+      if (user?.id) token.sub = user.id
       return token
     },
     session({ session, token }) {
