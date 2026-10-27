@@ -100,3 +100,61 @@ roughly half a second longer while it wakes. Worth mentioning in your demo
 video so it does not read as a bug.
 
 **Vercel Hobby is non-commercial only**, which is fine for a student project.
+
+## Google sign-in (optional)
+
+Entirely optional — the app hides the button when it is not configured. Do this
+**after** the Vercel deploy, because Google needs the deployment URL.
+
+### In Google Cloud Console
+
+1. **[console.cloud.google.com](https://console.cloud.google.com)** → create a
+   project, call it `runna-web`.
+2. **APIs & Services → OAuth consent screen**
+   - User type: **External**
+   - App name `Runna Web`, your email for both support and developer contact
+   - Scopes: the defaults (`email`, `profile`, `openid`) are enough — do not add
+     any others, or Google will want to verify the app
+3. **Publish the app.** While it is in *Testing*, only addresses you list as
+   test users can sign in, which means evaluators get locked out. An app asking
+   only for email and profile does not need review to publish.
+4. **Credentials → Create credentials → OAuth client ID**
+   - Type: **Web application**
+   - **Authorised JavaScript origins**
+     ```
+     http://localhost:3000
+     https://<your-app>.vercel.app
+     ```
+   - **Authorised redirect URIs** — the path matters exactly:
+     ```
+     http://localhost:3000/api/auth/callback/google
+     https://<your-app>.vercel.app/api/auth/callback/google
+     ```
+5. Copy the client ID and client secret.
+
+### In Vercel and `.env.local`
+
+| Name | Value |
+|---|---|
+| `AUTH_GOOGLE_ID` | the client ID |
+| `AUTH_GOOGLE_SECRET` | the client secret |
+
+Add both to Vercel, then redeploy. Add them to `.env.local` too if you want the
+button locally.
+
+### Things that commonly go wrong
+
+**`redirect_uri_mismatch`** — the URI in Google must match what Auth.js sends
+character for character, including `https` and no trailing slash.
+
+**`access_blocked`** — the consent screen is still in Testing. Publish it, or
+add the address as a test user.
+
+**Button does not appear** — both variables must be set. One alone is ignored
+on purpose, so a half-configured deployment does not fail at boot.
+
+### Signing in with Google on an email that already has a password
+
+This works and attaches to the existing account. That is deliberate: Google
+verifies the addresses it issues, so linking is safe. Without it the user would
+hit an opaque `OAuthAccountNotLinked` error.
