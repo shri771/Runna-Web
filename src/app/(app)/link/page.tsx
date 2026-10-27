@@ -11,7 +11,12 @@ import { formatDistance } from '@/lib/units'
 
 export const dynamic = 'force-dynamic'
 
-export default async function LinkPage() {
+export default async function LinkPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ strava?: string }>
+}) {
+  const { strava: stravaOutcome } = await searchParams
   const session = await auth()
   if (!session?.user?.id) redirect('/sign-in?next=/link')
 
@@ -32,6 +37,19 @@ export default async function LinkPage() {
         user={{ name: session.user.name ?? null, image: session.user.image ?? null }}
       />
 
+      {stravaOutcome && (
+        <p
+          role="status"
+          className="mb-4 rounded-[14px] border border-hairline bg-slate px-4 py-3 text-[14px]"
+        >
+          {stravaOutcome === 'cancelled'
+            ? 'Strava connection cancelled. Nothing changed.'
+            : stravaOutcome === 'incomplete'
+              ? 'Strava authorised you, but importing runs is not finished yet, so nothing was imported. Log a run by hand below and it works exactly the same way.'
+              : 'Came back from Strava without an authorisation. Nothing changed.'}
+        </p>
+      )}
+
       {!connection && (
         <section className="rounded-[14px] border border-hairline bg-slate p-5">
           <h2 className="text-[17px] font-semibold">Add your runs</h2>
@@ -40,13 +58,20 @@ export default async function LinkPage() {
             date, distance and time.
           </p>
 
-          <div className="mt-4">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <a
+              href="/api/integrations/strava/connect"
+              className="inline-flex items-center gap-2 rounded-full bg-[#fc4c02] px-5 py-2.5 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              Connect Strava
+            </a>
             <ManualRunForm defaultDate={today} />
           </div>
 
           <p className="mt-4 border-t border-hairline pt-4 text-[13px] text-ash-dim">
-            Importing automatically from Strava is designed but not built yet — see
-            docs/05-strava-integration.md. Until it is, runs are logged by hand.
+            Connecting opens Strava&apos;s own authorisation screen. Importing runs back from it is
+            designed but not finished — see docs/05-strava-integration.md — so until then, logging
+            a run by hand does everything the rest of the app needs.
           </p>
         </section>
       )}
