@@ -1,10 +1,18 @@
 # Runna Web
 
-A running coach that builds your training plan around how much you can
-actually run — and rebuilds it when that changes.
+A running coach that builds your training plan around the distance you can
+actually cover each week — and rebuilds it when that changes.
 
-**Live:** _not deployed yet — see [Deployment](#deployment)_
-**Demo account:** `demo@runna.local` / `runna-demo-2026` (created by `npm run db:seed`)
+| | |
+|---|---|
+| **Live application** | **https://runna-web-mu.vercel.app** |
+| **Demo video** | https://drive.google.com/file/d/1wWGoFMRrA9HVrS6z1Iiy9ILlw-Cl6RlM/view |
+| **Repository** | https://github.com/shri771/Runna-Web |
+| **Student** | Shrikant Shingare — 25BCS10641 |
+
+**Try it without signing up:** `demo@runna.local` / `runna-demo-2026` — an
+account six weeks into a twelve-week half marathon block, with completed
+sessions, linked runs and personal records.
 
 ---
 
@@ -13,138 +21,241 @@ actually run — and rebuilds it when that changes.
 Someone who signs up for a half marathon has two realistic options, and both
 are bad.
 
-A **free static PDF plan** doesn't know their current fitness, assumes they can
+A **free static PDF plan** does not know their current fitness, assumes they can
 run on the days it prescribes, gives no pace targets, and the moment they miss
 a week it is wrong and stays wrong. A **human coach** is correct and adaptive,
-and costs £100+ a month.
+and costs more than £100 a month.
 
 Almost every amateur runner lives in the gap between those. They also already
-record their runs — in Strava, on a watch — but that data sits in a different
-app from the plan, so nobody can answer *"am I actually on track?"* without
-building a spreadsheet.
+record their runs, but that data sits in a different app from the plan, so
+nobody can answer *"am I actually on track?"* without building a spreadsheet.
 
 ## Target users
 
-**Primary:** an amateur runner with a target race 8–20 weeks out, running 3–5
-times a week, already using Strava, who wants structure without hiring a coach.
+**Primary:** an amateur runner with a goal race 8–20 weeks away, running three
+to five times a week, who wants structure without hiring a coach.
 
-**Secondary:** a runner with no race who wants to build up to a distance or
-hold a consistent weekly volume.
+**Secondary:** a runner with no race who wants to build up to a distance or hold
+a consistent weekly volume.
 
-Deliberately not built for elite athletes, treadmill-only users, or anyone
-wanting a social feed — Strava already owns the feed.
+Deliberately **not** built for elite athletes or anyone wanting a social feed.
 
 ## Solution
 
-Three things the PDF cannot do.
-
-**It generates a real plan.** Not a lookup table: a periodised block computed
+**It generates a real plan.** Not a lookup table — a periodised block computed
 from the runner's own inputs, with warm-ups, intervals, recoveries and
-cool-downs, each step carrying a target pace range derived from their own race
-result.
+cool-downs, each step carrying a target pace range derived from a race they
+have actually run.
 
-**It stays the runner's plan.** Weekly mileage ceiling, days per week,
-long-run day, per-run-type distance caps and progression rate are all editable,
-and the engine treats the mileage target as a ceiling rather than a
-destination — when the curve reaches it, the weeks that follow get harder
-rather than longer.
+**It stays the runner's plan.** Weekly mileage ceiling, days per week, long-run
+day and progression rate are all theirs to set. The engine treats the mileage
+target as a *ceiling, not a destination*: when the curve reaches it, the weeks
+that follow get harder rather than longer.
 
-**It closes the loop with what was actually run.** Recorded runs are matched to
-the session they were meant to be, scored on date, distance and duration.
-Confident matches link themselves; plausible ones are offered for confirmation.
-Completion, adherence and personal records all fall out of that.
+**It closes the loop with what was actually run.** Recorded runs are scored
+against the session they were meant to be, on date, distance and duration.
+Completion, adherence and records all fall out of that.
+
+---
 
 ## Key features
 
-| Area | What a user can do |
-|---|---|
-| Account | Email/password sign-up and sign-in, session auth, guarded routes |
-| Plan creation | Six-step wizard across 5 goal types, 2–7 days a week, with a **live preview** — drag the mileage slider and the whole block reshapes before anything is saved |
-| Plan engine | Periodised base/build/peak/taper, cutback weeks, taper curve, long-run progression, constraint-based day scheduling, 13 session templates with per-interval pace targets |
-| Workouts | Structured steps with nested repeats, pace range per step, duration estimate, completion, skip, notes |
-| Linking | Match-scored suggestions, manual "link to…", conflict recovery when a run is already attached elsewhere, unlink |
-| Progress | Weekly volume, plan adherence, compliance breakdown, personal records across 10 distances |
-| Reliability | Optimistic updates that roll back and say so, ownership checks on every mutation, rate limiting, typed error envelope |
+### The five core workflows
 
-### Honest status
+| # | Workflow | What the user does |
+|---|---|---|
+| 1 | **Create a plan** | Six-step wizard. Drag the mileage slider and twelve weeks of training reshape live, before anything is saved. |
+| 2 | **Customise it** | Set the weekly ceiling, training days, long-run day and build rate; the engine warns when a target needs an unsafe ramp and offers one-tap fixes. |
+| 3 | **Execute the week** | Today shows the session with its full step breakdown and pace targets, plus how to run it and why it is in the plan. |
+| 4 | **Reconcile runs** | The Link tab scores runs against unmatched sessions, proposes the likely pairing, and handles the conflict when a run is already attached elsewhere. |
+| 5 | **Track progress** | Weekly volume, plan adherence, per-session compliance grading and personal records across ten distances. |
 
-Built and working: auth, the plan engine, plan creation and persistence, and
-all six app screens on real data.
+### Everything else
 
-**Not built:** Strava OAuth. The linking workflow is complete and the data model
-and sync design are specified in [`docs/05-strava-integration.md`](docs/05-strava-integration.md),
-but runs currently arrive via the seed script or manual entry rather than a live
-Strava connection. Also unbuilt: drag-and-drop rearranging, the plan
-regeneration diff, and the workout detail screen — all specified, none shipped.
+- Email/password **and** Google sign-in, with route guards and per-resource ownership checks
+- 13 parameterised session templates that scale to the week's volume
+- Every workout drawn as its own **intensity silhouette**, computed from its steps
+- Hand-logged runs, so the app is fully usable with no integration connected
+- Strava authorisation hand-off (see [Honest status](#honest-status))
+- Delete a plan and build a new one; activities survive, because they are the
+  runner's record rather than the plan's
+
+---
 
 ## Tech stack
 
-| Layer | Choice | Why |
+| Layer | Choice | Why this one |
 |---|---|---|
-| Framework | Next.js 15 (App Router), TypeScript | Server Components mean most pages need no client fetching; one repo, one deploy |
-| UI | Tailwind v4, lucide-react, Barlow Condensed + Inter | Condensed figures are the native typography of race results |
-| Database | Neon Postgres + Drizzle ORM | Serverless Postgres over HTTP, no pool exhaustion; readable committed migrations |
-| Auth | Auth.js v5, credentials provider, bcrypt | Self-hosted, so the authorization logic stays in the application |
-| Validation | Zod | One schema per boundary, shared client and server |
-| Tests | Vitest | The engine is pure functions, so unit tests carry most of the value |
-| Hosting | Vercel | Free tier, and it provides the public HTTPS URL a Strava webhook needs |
+| Framework | **Next.js 15**, App Router, TypeScript | Server Components mean most pages need no client fetching; one repo, one deploy |
+| Styling | **Tailwind v4**, Barlow Condensed + Inter | Condensed figures are the native typography of race results |
+| Database | **Neon Postgres** + **Drizzle ORM** | Serverless Postgres over HTTP avoids pool exhaustion; migrations are readable SQL, committed to the repo |
+| Auth | **Auth.js v5** — credentials + Google | Self-hosted, so the authorisation logic stays in the application rather than in a vendor's policy engine |
+| Validation | **Zod** | One schema per boundary, shared by client and server |
+| Testing | **Vitest** | The engine is pure functions, so unit tests carry most of the value |
+| Hosting | **Vercel** | Free tier, preview deploys, and the public HTTPS URL an OAuth callback needs |
 
-Every component has a free tier; no credit card is required to run this.
+Every component has a free tier. No service here requires a card.
+
+**Deliberately not used:** no Redis (one Postgres table does the rate limiting
+at this scale), no component library (the design is specific enough that a kit
+would have been fought rather than used), no state manager (URL params and
+Server Components cover it).
+
+---
 
 ## Architecture
 
-```
-Browser
-  │
-  ├── Server Components ──────▶ services/ ──▶ Drizzle ──▶ Neon Postgres
-  │     (today, plan, calendar, link, progress, settings)
-  │
-  └── Route Handlers ────────▶ services/ ──▶ Drizzle ──▶ Neon Postgres
-        /api/plans            │
-        /api/plans/preview ───┘──▶ lib/plan-engine  (pure, no DB)
-        /api/workouts/:id
-        /api/link ────────────────▶ lib/matching    (pure, no DB)
-```
+### The shape of it
 
 ```
-src/
-├── app/
-│   ├── (app)/          today · plan · calendar · link · progress · settings
-│   ├── (auth)/         sign-in · sign-up
-│   ├── onboarding/     the six-step plan builder
-│   └── api/            plans · workouts · link · auth
-├── components/         ui · plan · workout · progress · nav · auth
-├── lib/
-│   ├── plan-engine/    ← PURE: no React, no database, no network
-│   ├── matching/       ← PURE: activity-to-session scoring
-│   ├── services/       the only place the engine meets the database
-│   ├── db/             Drizzle schema, seed
-│   └── auth · crypto · errors · rate-limit · units
-└── middleware.ts       route guards
+                          ┌──────────────────────────────┐
+  Browser ───────────────▶│  Next.js (Vercel, sin1)      │
+                          │                              │
+                          │  middleware.ts ── route      │
+                          │     guards, edge runtime     │
+                          │              │               │
+                          │   ┌──────────┴──────────┐    │
+                          │   │                     │    │
+                          │  Server            Route      │
+                          │  Components        Handlers   │
+                          │   │                     │    │
+                          │   └──────────┬──────────┘    │
+                          │              ▼               │
+                          │         lib/services/        │
+                          │   the only layer that talks  │
+                          │   to both domain and storage │
+                          │         │          │         │
+                          │         ▼          ▼         │
+                          │  lib/plan-engine  Drizzle    │
+                          │  lib/matching       │        │
+                          │   ← PURE: no DB,    │        │
+                          │     no React        │        │
+                          └─────────────────────┼────────┘
+                                                ▼
+                                       Neon Postgres (19 tables)
 ```
 
-**The boundary that matters:** `src/lib/plan-engine/` may not import React,
-Next, or the database. An ESLint rule enforces it. That is what lets the engine
-— the most interesting part of the project — be tested without a browser or a
-connection string, and it is why 53 of the 60 tests need no setup at all.
+### The boundary that matters
 
-The engine pipeline:
+**`src/lib/plan-engine/` may not import React, Next, or the database.** An
+ESLint rule enforces it, and the rule is verified by deliberately violating it.
+
+That is not decoration. The engine is the most interesting part of the project,
+and keeping it pure means it can be tested without a browser, a server or a
+connection string — which is why 53 of the 60 tests need no setup at all. The
+same boundary applies to `lib/matching`, which was extracted precisely because
+a failing test revealed it was unreachable while coupled to the database.
+
+### How a plan is generated
 
 ```
 PlanRequest
   → validate()            blocking errors vs overridable warnings
   → derivePaceZones()     Riegel equivalence → 8 training zones
   → buildPhases()         base / build / peak / taper
-  → buildMileageCurve()   progression, cutbacks, taper, capped at the target
-  → buildLongRunCurve()   capped by goal, by user limit, and by share of week
+  → buildMileageCurve()   progression, cutback weeks, taper, capped at target
+  → buildLongRunCurve()   capped by goal, by user limit, by share of week
   → assignSessionSlots()  constraint-scored day placement
   → materialise()         templates → workouts with steps and pace targets
+  → balanceToTarget()     remainder spread across the easy runs
   → Plan
 ```
 
-Deterministic by construction: no clock reads, no randomness, so the same
-request always yields a byte-identical plan. That makes snapshot testing
-possible and plan regeneration predictable.
+Every pace in the app derives from **one number**: an equivalent 5K time,
+normalised from any input via Riegel's formula `T₂ = T₁ × (D₂/D₁)^1.06`. The
+eight training zones are offsets from it, each a *range* rather than a single
+number, which is what produces honest estimates like "40 – 45m" instead of
+false precision.
+
+Day placement is a small constraint solver: enumerate candidate arrangements,
+score each against the training rules (no two quality sessions on consecutive
+days, nothing hard the day before the long run, rest after the hardest day),
+keep the best. With at most seven days the search space is tiny, so brute force
+is both adequate and deterministic.
+
+**The whole engine is deterministic** — no clock reads, no randomness — so the
+same request always produces a byte-identical plan. That is what makes snapshot
+testing possible and plan regeneration predictable.
+
+### How a run is matched to a session
+
+```
+score = 0.40·date + 0.35·distance + 0.25·duration
+
+  ≥ 0.75 and clear of the runner-up  → link automatically
+  ≥ 0.45                             → propose, let the user confirm
+  more than one day apart            → 0, whatever the distance says
+```
+
+### Data model
+
+19 tables. The constraints worth naming are the ones that turn API conflicts
+from advisory into real:
+
+- a **partial unique index** giving each user at most one `ACTIVE` plan
+- **one link per workout and one per activity**, so a run cannot silently
+  satisfy two sessions — this is what produces the 409 and its "move it here"
+  recovery
+- `unique(user_id, external_id)` on activities, the import dedupe guarantee
+- `unique(provider, object_id, aspect_type, event_time)` on webhook events, so
+  a retried delivery is free to ignore
+
+**Plan versions are immutable snapshots** carrying the exact request that
+produced them, so any plan is reproducible from its row alone, and regeneration
+can preserve completed history by pointing at a new version rather than
+mutating the old one.
+
+### Security
+
+| Concern | Measure |
+|---|---|
+| Passwords | bcrypt, cost 12, never logged or returned |
+| Sessions | JWT in an HTTP-only, `SameSite=Lax`, Secure cookie |
+| Third-party tokens | AES-256-GCM at rest, key from the environment |
+| Authorisation | Every mutation joins the resource back to the user; someone else's resource is a **404, never a 403**, so existence is not confirmed |
+| Account enumeration | Registration returns the same response whether or not the email exists; sign-in runs the hash comparison even for unknown users so timing does not leak |
+| Input | Zod at every route boundary |
+| SQL injection | Drizzle parameterises everything; no string-built SQL |
+| Secrets | `.env*` git-ignored, `.env.example` committed empty, real values only in Vercel |
+| Rate limiting | Per-user and per-IP windows on registration, sign-in, generation |
+
+### Error handling
+
+Every surface implements loading, empty, error and success states. Specifics
+worth calling out:
+
+- **Warnings are overridable; errors are not.** The 10%-per-week volume ramp is
+  a warning with one-tap fixes, not a wall — the runner is told the injury risk
+  and may proceed.
+- **Optimistic updates roll back and say so.** Marking a session complete fills
+  instantly; a failed write reverts it with an explanation, not silently.
+- **Conflicts offer a way out.** Linking an already-attached run returns a 409
+  naming the other session, with "move it here instead".
+- **Invalid states are made unreachable** where possible: the longest-run slider
+  maximum follows the weekly-distance slider, so the combination cannot be
+  entered rather than being rejected later.
+
+Full catalogue in [`docs/09-error-states.md`](docs/09-error-states.md).
+
+---
+
+## Honest status
+
+Built and working: authentication, the plan engine, plan creation and
+persistence, all six app screens on real data, run linking, and progress
+tracking.
+
+**Strava import is not finished.** The authorisation hand-off is implemented —
+clicking Connect opens Strava's own consent screen — but the token exchange and
+activity import are not, so nothing is stored. The callback says exactly that
+and points at the hand-logged run form, which feeds the identical matcher. The
+full design is in [`docs/05-strava-integration.md`](docs/05-strava-integration.md).
+
+Also specified but not built: drag-and-drop rearranging, and the plan
+regeneration diff. An evaluator finding these absent is better than one
+discovering they were implied.
+
+---
 
 ## Local setup
 
@@ -157,7 +268,7 @@ npm install
 
 cp .env.example .env.local        # then fill it in, see below
 npm run db:migrate                # applies drizzle/0000_initial_schema.sql
-npm run db:seed                   # optional: demo account with a half-marathon block
+npm run db:seed                   # optional: the demo account
 
 npm run dev                       # http://localhost:3000
 ```
@@ -169,46 +280,57 @@ npm run typecheck
 npm run build
 ```
 
-> Neon free-tier databases auto-suspend when idle, so the first request after a
-> quiet period takes roughly half a second longer. That is the database waking,
-> not a bug.
+> Neon free-tier databases suspend when idle, so the first request after a quiet
+> period takes about half a second longer. That is the database waking, not a bug.
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local`. Nothing here is committed.
+Copy `.env.example` to `.env.local`. Nothing below is committed.
 
-| Variable | What it is |
-|---|---|
-| `DATABASE_URL` | Neon connection string |
-| `AUTH_SECRET` | Session signing key — `openssl rand -base64 32` |
-| `AUTH_URL` | App origin, e.g. `http://localhost:3000` |
-| `ENCRYPTION_KEY` | AES-256-GCM key for third-party tokens — `openssl rand -base64 32` |
-| `STRAVA_CLIENT_ID` / `STRAVA_CLIENT_SECRET` | From strava.com/settings/api. Only needed once OAuth is built |
-| `STRAVA_REDIRECT_URI` | OAuth callback |
-| `STRAVA_VERIFY_TOKEN` | Any random string, for the webhook handshake |
-| `CRON_SECRET` | Bearer token protecting `/api/cron/*` |
+| Variable | Required | What it is |
+|---|---|---|
+| `DATABASE_URL` | yes | Neon pooled connection string |
+| `AUTH_SECRET` | yes | Session signing key — `openssl rand -base64 32` |
+| `AUTH_URL` | yes | App origin. **In production this must be the deployment URL**, or every redirect points at localhost |
+| `ENCRYPTION_KEY` | yes | AES-256-GCM key for third-party tokens — `openssl rand -base64 32` |
+| `AUTH_GOOGLE_ID` | no | Google OAuth client ID. Both Google vars must be set or the button is hidden |
+| `AUTH_GOOGLE_SECRET` | no | Google OAuth client secret |
+| `STRAVA_CLIENT_ID` | no | Falls back to Strava's login page when absent |
+| `STRAVA_REDIRECT_URI` | no | OAuth callback |
+| `CRON_SECRET` | no | Bearer token guarding `/api/cron/*` |
 
 ## Deployment
 
-Not yet deployed. To deploy:
+Live at **https://runna-web-mu.vercel.app**, on Vercel's free tier with the
+database on Neon, both in Singapore so the app sits next to its data.
 
-1. Create a **Neon** project and copy the pooled connection string.
-2. Import the repo on **Vercel**.
-3. Set every variable above in the Vercel project settings.
-4. Deploy — `drizzle-kit migrate` runs as part of the build.
-5. Run `npm run db:seed` against the production database so evaluators land on
-   a working account rather than an empty one.
+The build command is `drizzle-kit migrate && next build`, so a deploy applies
+the schema before compiling. Migrations are tracked in a table, making repeat
+deploys a no-op, and a failed migration fails the deploy rather than shipping a
+schema the code does not match.
 
-## Documentation
-
-Full design specification in [`docs/`](docs/) — 20 documents covering the
-product brief, every screen, the plan engine, the Strava integration, the data
-model, the API contract, architecture, and error states. Start with
-[`docs/README.md`](docs/README.md).
-
-Design reasoning, including why the first visual pass was rejected, is in
-[`docs/DESIGN-DIRECTION.md`](docs/DESIGN-DIRECTION.md).
+Step-by-step, including the Google setup, in [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ---
 
-Not affiliated with Runna or Strava. Built as an educational project.
+## Documentation
+
+20 documents in [`docs/`](docs/) — product brief, a specification per screen,
+the plan engine, the Strava design, data model, API contract, architecture and
+error states. Start at [`docs/README.md`](docs/README.md).
+
+Design reasoning, including why the first two visual passes were rejected and
+how the palette was computed in OKLCH and contrast-checked, is in
+[`docs/DESIGN-DIRECTION.md`](docs/DESIGN-DIRECTION.md).
+
+## Originality
+
+Built from scratch. The *product concept* is modelled on the Runna app, whose
+screenshots informed the layout and information architecture, but no code,
+asset or design file comes from it — the training-plan engine, matching
+algorithm, data model and visual language are all original work for this
+project. Not affiliated with Runna or Strava.
+
+AI assistance was used throughout, as permitted, for code generation,
+refactoring, documentation and debugging. Every engineering decision recorded in
+`docs/` was made and justified deliberately rather than accepted by default.
